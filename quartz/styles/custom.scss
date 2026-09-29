@@ -1,0 +1,135 @@
+@use "./base.scss";
+@use "./variables.scss" as *;
+
+// ---------------------------------------------------------------------------
+// Layout de leitura (SPEC 9.1/9.2): coluna única centralizada, sem barra lateral
+// esquerda; o sumário fica ao lado do texto no desktop.
+// ---------------------------------------------------------------------------
+
+$larguraTexto: 44rem; // ~70 caracteres com Source Serif 4 a 18px
+
+.page > #quartz-body {
+  @media all and ($desktop) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, #{$larguraTexto}) minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    grid-template-areas:
+      "grid-sidebar-left grid-center grid-sidebar-right"
+      "grid-sidebar-left grid-footer grid-sidebar-right";
+  }
+  @media all and ($tablet) {
+    grid-template-columns: minmax(0, #{$larguraTexto});
+    grid-template-rows: auto auto auto;
+    grid-template-areas:
+      "grid-center"
+      "grid-sidebar-right"
+      "grid-footer";
+    justify-content: center;
+  }
+  @media all and ($mobile) {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto auto;
+    grid-template-areas:
+      "grid-center"
+      "grid-sidebar-right"
+      "grid-footer";
+  }
+
+  & .sidebar.left {
+    display: none;
+  }
+
+  & .center {
+    grid-area: grid-center;
+    margin-right: 0;
+    margin-left: 0;
+  }
+
+  & .sidebar.right {
+    @media all and ($desktop) {
+      justify-self: start;
+      width: 100%;
+      max-width: 17rem;
+      padding-top: 9rem;
+    }
+  }
+
+  & .page-header {
+    margin-top: 1.5rem;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Cabeçalho
+// ---------------------------------------------------------------------------
+
+header {
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  margin: 0 0 1.5rem;
+
+  & .site-title {
+    margin-right: auto;
+  }
+  & .search {
+    flex-grow: 0;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Tipografia de leitura
+// ---------------------------------------------------------------------------
+
+article {
+  font-size: 1.0625rem; // 17px no mobile
+  line-height: 1.7;
+  @media all and (min-width: 800px) {
+    font-size: 1.125rem; // 18px no desktop
+  }
+
+  & > h1 {
+    font-size: 2.1rem;
+    line-height: 1.2;
+  }
+}
+
+.page-footer {
+  & h2 {
+    font-size: 1.25rem;
+  }
+}
+
+// O Quartz deixa o rodapé com opacity 0.7, o que derruba o contraste mínimo de 4,5:1.
+footer {
+  opacity: 1;
+  & a {
+    color: var(--secondary);
+  }
+  & ul {
+    flex-wrap: wrap;
+    gap: 0.25rem 1rem;
+    margin-top: 0;
+  }
+}
+
+// Foco visível para navegação por teclado (WCAG 2.4.7)
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--secondary);
+  outline-offset: 2px;
+}
+
+// Bloco transcluído ("lendo agora" na página inicial)
+.transclude {
+  border-left: 0;
+  padding-left: 0;
+  & .transclude-src {
+    display: none;
+  }
+}
+
+// Datas nas listagens: o Quartz aplica opacity 0.6, o que derruba o contraste mínimo de 4,5:1.
+.section-li .meta,
+.recent-li .meta {
+  color: var(--gray);
+  opacity: 1 !important;
+}

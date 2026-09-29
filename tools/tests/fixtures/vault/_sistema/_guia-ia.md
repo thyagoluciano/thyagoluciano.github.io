@@ -1,0 +1,3 @@
+# Guia interno
+
+SEGREDO-sistema

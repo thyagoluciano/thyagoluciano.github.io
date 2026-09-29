@@ -1,0 +1,3 @@
+# Copie para tools/config.toml (fora do Git) e ajuste.
+# A variável de ambiente SB_VAULT e a opção --vault têm prioridade sobre este arquivo.
+vault = "~/Library/Mobile Documents/iCloud~md~obsidian/Documents/SecondBrain"

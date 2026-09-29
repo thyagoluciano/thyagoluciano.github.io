@@ -1,0 +1,25 @@
+name: Testes
+
+on:
+  pull_request:
+
+jobs:
+  testes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: npm ci
+      - name: Testes do exportador (inclui o teste de vazamento com build do Quartz)
+        run: |
+          pip install pytest pyyaml
+          pytest tools/tests -q
+      - name: Build do Quartz
+        run: npx quartz build
