@@ -1,6 +1,6 @@
 # SPEC: Tema visual inspirado no Chirpy
 
-Complemento da [SPEC.md](./SPEC.md). Quando aprovado, **substitui a seção 9 (layout e tema)** e as partes de layout do M4. O restante da SPEC (exportador, deploy, domínio, SEO, testes de privacidade) não muda.
+Complemento da [SPEC.md](./SPEC.md). **Substitui a seção 9 (layout e tema)** e as partes de layout do M4. Status: implementado (marcos T0 a T4). O restante da SPEC (exportador, deploy, domínio, SEO, testes de privacidade) não muda.
 
 Referência de design: [Chirpy](https://github.com/cotes2020/jekyll-theme-chirpy) (Jekyll, licença MIT). Usamos o desenho de layout e a hierarquia de informação. Não copiamos código nem imagens, e o tema de cores e as fontes continuam os nossos.
 
@@ -44,15 +44,15 @@ Os pontos de quebra ficam em `custom.scss`. As variáveis do Quartz (800 e 1200 
 │  Barra     │ Barra superior (breadcrumb    │              │
 │  lateral   │ + busca)                      │   Painel     │
 │  260 px    ├───────────────────────────────┤   direito    │
-│  (fixa)    │ Conteúdo (máx. 1100 px,       │   280 px     │
-│            │ texto do artigo em ~72 car.)  │   (sticky)   │
+│  (fixa)    │ Conteúdo (máx. 60 rem; o      │   280 px     │
+│            │ texto ocupa a coluna toda)    │   (sticky)   │
 │            ├───────────────────────────────┤              │
 │            │ Rodapé                        │              │
 └────────────┴───────────────────────────────┴──────────────┘
 ```
 
 - A barra lateral usa a área `left` do Quartz (hoje oculta). O painel direito usa a área `right`.
-- A largura de leitura do texto do artigo continua entre 65 e 72 caracteres, corpo em 18 px no desktop. Só cards, listas e o arquivo usam a largura total do conteúdo.
+- Painel direito colado à direita (margem fixa de 1,5 rem) e coluna central centralizada entre a barra lateral e o painel (folgas iguais dos dois lados). A coluna central chega a 60 rem (960 px) e o texto do artigo ocupa a coluna toda, com corpo em 18 px no desktop (decisão do autor, no lugar dos 65 a 72 caracteres por linha).
 
 ## 4. Componentes novos (`quartz/components/`)
 

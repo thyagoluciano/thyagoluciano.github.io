@@ -41,7 +41,7 @@ configuration: {
   pageTitle: "Thyago Luciano",
   pageTitleSuffix: " · Thyago Luciano",
   enableSPA: true,
-  enablePopovers: true,
+  enablePopovers: false,                // sem prévia ao passar o mouse (decisão do autor)
   analytics: null,                     // decisão pendente (PRD §10)
   locale: "pt-BR",
   baseUrl: "thyagoluciano.com.br",
@@ -72,7 +72,7 @@ plugins: {
     Plugin.Static(),
     Plugin.NotFoundPage(),
     Plugin.CNAME(),
-    // Plugin.CustomOgImages() se disponível na versão instalada (seção 10)
+    // CustomOgImages não é usado: gera WebP, que o LinkedIn não exibe (seção 10)
   ],
 }
 ```
@@ -220,6 +220,8 @@ Também:
 
 ## 9. Layout e tema visual
 
+> **Substituída.** O layout e o tema foram reimplementados a partir do Chirpy e estão em [SPEC-TEMA-CHIRPY.md](./SPEC-TEMA-CHIRPY.md) (marcos T0 a T4, concluídos). Vale o que está lá para layout, componentes, tema e acessibilidade. O texto desta seção fica só como histórico do M4.
+
 ### 9.1 Layout (`quartz.layout.ts`)
 | Área | Componentes |
 |---|---|
@@ -256,7 +258,7 @@ Também:
 ## 10. SEO e compartilhamento
 
 - `<html lang="pt-BR">`, `description` em todas as páginas (do campo `descricao`).
-- Open Graph e Twitter Card: título, descrição, URL canônica, imagem (capa da nota; sem capa, imagem gerada por `CustomOgImages` se disponível; senão uma imagem padrão em `quartz/static/og-padrao.png`, 1200×630).
+- Open Graph e Twitter Card: título, descrição, URL canônica, imagem (capa da nota; sem capa, a imagem padrão `quartz/static/og-padrao.png`, 1200×630, em PNG; o `CustomOgImages` foi descartado porque gera WebP, que o LinkedIn não exibe).
 - `sitemap.xml` e `index.xml` (RSS) gerados pelo `ContentIndex`.
 - `robots.txt` permitindo tudo e apontando o sitemap.
 - Página 404 em português.
@@ -294,7 +296,7 @@ Todas com `publish: true`. Textos de exemplo marcados com `TODO:` para eu substi
 | **M1** | Instalar o Quartz (seção 3), configuração pt-BR (seção 4), páginas fixas com `TODO:` (seção 11), workflow de deploy (seção 8), publicar no endereço padrão `thyagoluciano.github.io/thyagoluciano.com.br` (com `baseUrl` temporário igual a esse endereço) |
 | **M2** | Exportador completo (seção 6), manifesto, auditoria, testes (seção 12), scripts `publicar`, `previa`, `simular` (seção 7), CI de testes |
 | **M3** | `Plugin.CNAME()`, DNS no Registro.br, domínio customizado e HTTPS (seção 8); ajustar `baseUrl` |
-| **M4** | Layout, tema, componentes novos, SEO, imagem padrão de compartilhamento, 404 (seções 9 e 10); Lighthouse |
+| **M4** | Layout, tema, componentes novos, SEO, imagem padrão de compartilhamento, 404 (seções 9 e 10); Lighthouse. O layout passou a seguir o [SPEC-TEMA-CHIRPY.md](./SPEC-TEMA-CHIRPY.md) |
 | **M5** | Primeiro artigo real; README com o fluxo de publicação; seção "Publicação no site" no `_sistema/_guia-ia.md` do vault (com commit no Git do vault) |
 
 ## 14. Critérios de pronto
