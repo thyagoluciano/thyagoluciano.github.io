@@ -1,6 +1,8 @@
 import { QuartzConfig } from "./quartz/cfg"
 import * as Plugin from "./quartz/plugins"
 import { QuartzTransformerPlugin } from "./quartz/plugins/types"
+import PaginaDePasta from "./quartz/components/PaginaDePasta"
+import PaginaDeTag from "./quartz/components/PaginaDeTag"
 
 const BASE_URL = "thyagoluciano.com.br"
 
@@ -29,7 +31,7 @@ const config: QuartzConfig = {
     pageTitle: "Thyago Luciano",
     pageTitleSuffix: " · Thyago Luciano",
     enableSPA: true,
-    enablePopovers: true,
+    enablePopovers: false, // sem prévia ao passar o mouse (decisão do autor)
     analytics: null, // decisão pendente (PRD §10)
     locale: "pt-BR",
     baseUrl: BASE_URL,
@@ -94,8 +96,8 @@ const config: QuartzConfig = {
       Plugin.AliasRedirects(),
       Plugin.ComponentResources(),
       Plugin.ContentPage(),
-      Plugin.FolderPage(),
-      Plugin.TagPage(),
+      Plugin.FolderPage({ pageBody: PaginaDePasta() }),
+      Plugin.TagPage({ pageBody: PaginaDeTag() }),
       Plugin.ContentIndex({
         enableSiteMap: true,
         enableRSS: true,

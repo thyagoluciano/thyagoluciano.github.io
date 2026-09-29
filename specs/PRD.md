@@ -69,7 +69,7 @@ Publicar **thyagoluciano.com.br** como um site estático gerado a partir do vaul
 - Tem modo de simulação (mostra o que entra, sai e muda, sem escrever).
 
 ### RF3. Navegação e descoberta
-- Links entre notas, backlinks ("mencionado em"), prévia ao passar o mouse, grafo local.
+- Links entre notas, backlinks ("mencionado em"), grafo local. Sem prévia ao passar o mouse (removida por decisão do autor).
 - Busca no site.
 - Índice por tags e por tema.
 - Artigos recentes na página inicial.

@@ -41,7 +41,7 @@ configuration: {
   pageTitle: "Thyago Luciano",
   pageTitleSuffix: " · Thyago Luciano",
   enableSPA: true,
-  enablePopovers: true,
+  enablePopovers: false,                // sem prévia ao passar o mouse (decisão do autor)
   analytics: null,                     // decisão pendente (PRD §10)
   locale: "pt-BR",
   baseUrl: "thyagoluciano.com.br",
