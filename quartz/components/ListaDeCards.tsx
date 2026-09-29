@@ -26,6 +26,17 @@ export const maisRecentesPrimeiro =
     return db - da || (a.frontmatter?.title ?? "").localeCompare(b.frontmatter?.title ?? "")
   }
 
+/** Minutos de leitura a partir do texto da página (0 se não houver texto). */
+export const minutosDeLeitura = (pagina: QuartzPluginData) =>
+  pagina.text ? Math.max(1, Math.ceil(readingTime(pagina.text).minutes)) : 0
+
+/**
+ * Data de atualização: só vale a `modified` explícita do frontmatter (vinda do exportador).
+ * Sem ela o Quartz cairia na data do arquivo ou do Git, que não representa a nota.
+ */
+export const dataDeAtualizacao = (cfg: GlobalConfiguration, pagina: QuartzPluginData) =>
+  pagina.frontmatter?.modified ? pagina.dates?.modified : getDate(cfg, pagina)
+
 interface CartoesProps {
   paginas: QuartzPluginData[]
   fileData: QuartzPluginData
@@ -39,7 +50,7 @@ export function Cartoes({ paginas, fileData, cfg }: CartoesProps) {
       {paginas.map((pagina) => {
         const fm = (pagina.frontmatter ?? {}) as Record<string, any>
         const data = getDate(cfg, pagina)
-        const minutos = pagina.text ? Math.max(1, Math.ceil(readingTime(pagina.text).minutes)) : 0
+        const minutos = minutosDeLeitura(pagina)
         const capa = typeof fm.capa === "string" && fm.capa ? fm.capa : ""
         const tags: string[] = (fm.tags ?? []).slice(0, 3)
         return (

@@ -3,7 +3,7 @@ import { FullSlug, getAllSegmentPrefixes, resolveRelative, simplifySlug } from "
 import { Root } from "hast"
 import { ComponentChildren } from "preact"
 import { htmlToJsx } from "../util/jsx"
-import { Cartoes, CSS_CARDS, exportada, maisRecentesPrimeiro } from "./ListaDeCards"
+import { Cartoes, exportada, maisRecentesPrimeiro } from "./ListaDeCards"
 
 const plural = (n: number, singular: string, pluralTxt: string) =>
   `${n} ${n === 1 ? singular : pluralTxt}`
@@ -75,9 +75,7 @@ export default (() => {
     )
   }
 
-  PaginaDeTag.css =
-    CSS_CARDS +
-    `
+  PaginaDeTag.css = `
 .nuvem-tags {
   display: flex;
   flex-wrap: wrap;

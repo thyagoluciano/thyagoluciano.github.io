@@ -2,7 +2,7 @@ import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } fro
 import { Root } from "hast"
 import { ComponentChildren } from "preact"
 import { htmlToJsx } from "../util/jsx"
-import { Cartoes, CSS_CARDS, exportada, maisRecentesPrimeiro } from "./ListaDeCards"
+import { Cartoes, exportada, maisRecentesPrimeiro } from "./ListaDeCards"
 
 // Corpo das páginas de pasta (/artigos/, /ideias/, /clube/, /temas/...): o texto do index.md
 // seguido de cards com as notas exportadas da pasta. Substitui o FolderContent do Quartz.
@@ -37,6 +37,5 @@ export default (() => {
     )
   }
 
-  PaginaDePasta.css = CSS_CARDS
   return PaginaDePasta
 }) satisfies QuartzComponentConstructor

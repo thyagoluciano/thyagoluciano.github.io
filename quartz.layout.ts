@@ -14,6 +14,13 @@ import BarraSuperior from "./quartz/components/BarraSuperior"
 import RedesSociais from "./quartz/components/RedesSociais"
 import VoltarAoTopo from "./quartz/components/VoltarAoTopo"
 import AncoraConteudo from "./quartz/components/AncoraConteudo"
+import PainelDireito from "./quartz/components/PainelDireito"
+import MetaDoPost from "./quartz/components/MetaDoPost"
+import CapaDoPost from "./quartz/components/CapaDoPost"
+import Compartilhar from "./quartz/components/Compartilhar"
+import LeiaTambem from "./quartz/components/LeiaTambem"
+import AnteriorProximo from "./quartz/components/AnteriorProximo"
+import NotasDoTema from "./quartz/components/NotasDoTema"
 
 // TODO: confirmar os endereços das redes. Endereço vazio = o link não aparece.
 const SUBSTACK_URL = "" // decisão pendente (PRD §10): sem endereço, o botão leva para /newsletter
@@ -32,6 +39,16 @@ const links = Object.fromEntries(Object.entries(REDES).filter(([, endereco]) => 
 const slugDe = (page: { fileData: { slug?: string } }) => page.fileData.slug ?? ""
 const geradoPeloExportador = (page: { fileData: { frontmatter?: Record<string, any> } }) =>
   page.fileData.frontmatter?.gerado === true
+
+const tipoDe = (page: { fileData: { frontmatter?: Record<string, any> } }) =>
+  String(page.fileData.frontmatter?.tipo ?? "")
+// Painel direito (atualizados, tags em alta): fora das páginas fixas Sobre e Newsletter e da 404
+const comPainel = (page: { fileData: { slug?: string } }) =>
+  !["sobre", "newsletter", "404"].includes(slugDe(page))
+const painelDireito = Component.ConditionalRender({
+  component: PainelDireito(),
+  condition: comPainel,
+})
 
 // Barra lateral (avatar, título, menu) + redes e alternância de tema no rodapé dela
 const barraLateral = [
@@ -73,6 +90,27 @@ export const sharedPageComponents: SharedLayout = {
       component: Arquivo(),
       condition: (page) => slugDe(page) === "arquivo",
     }),
+    // blocos de post (só notas exportadas)
+    Component.ConditionalRender({
+      component: Component.TagList(),
+      condition: geradoPeloExportador,
+    }),
+    Component.ConditionalRender({
+      component: Compartilhar(),
+      condition: geradoPeloExportador,
+    }),
+    Component.ConditionalRender({
+      component: LeiaTambem(),
+      condition: (page) => ["artigo", "ideia", "resenha"].includes(tipoDe(page)),
+    }),
+    Component.ConditionalRender({
+      component: AnteriorProximo(),
+      condition: (page) => geradoPeloExportador(page) && tipoDe(page) !== "tema",
+    }),
+    Component.ConditionalRender({
+      component: NotasDoTema(),
+      condition: (page) => tipoDe(page) === "tema",
+    }),
     Component.ConditionalRender({
       component: Newsletter({ substackUrl: SUBSTACK_URL }),
       condition: (page) => !["sobre", "newsletter", "404"].includes(slugDe(page)),
@@ -97,21 +135,22 @@ export const sharedPageComponents: SharedLayout = {
 export const defaultContentPageLayout: PageLayout = {
   beforeBody: [
     AncoraConteudo(),
-    Component.ArticleTitle(),
     Component.ConditionalRender({
-      component: Component.ContentMeta(),
+      component: CapaDoPost(),
       condition: geradoPeloExportador,
     }),
+    Component.ArticleTitle(),
     Component.ConditionalRender({
-      component: Component.TagList(),
+      component: MetaDoPost(),
       condition: geradoPeloExportador,
     }),
   ],
   left: barraLateral,
   right: [
+    painelDireito,
     Component.ConditionalRender({
       component: Component.DesktopOnly(Component.TableOfContents()),
-      condition: geradoPeloExportador,
+      condition: (page) => geradoPeloExportador(page) && (page.fileData.toc?.length ?? 0) >= 2,
     }),
   ],
 }
@@ -120,5 +159,5 @@ export const defaultContentPageLayout: PageLayout = {
 export const defaultListPageLayout: PageLayout = {
   beforeBody: [AncoraConteudo(), Component.ArticleTitle()],
   left: barraLateral,
-  right: [],
+  right: [painelDireito],
 }

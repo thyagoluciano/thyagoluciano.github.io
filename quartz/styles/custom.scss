@@ -21,7 +21,7 @@
 
 $barra: 260px;
 $painel: 280px;
-$texto: 48rem;
+$texto: 60rem; // coluna central (antes 48rem)
 
 .page {
   max-width: none;
@@ -39,12 +39,13 @@ $texto: 48rem;
   margin: 0;
 
   @media all and (min-width: 850px) {
-    grid-template-columns: #{$barra} minmax(1rem, 1fr) minmax(0, #{$texto}) minmax(1rem, 1fr);
+    grid-template-columns: #{$barra} minmax(1.5rem, 1fr) minmax(0, #{$texto}) 1.5rem;
   }
   @media all and (min-width: 1200px) {
+    // conteúdo centralizado entre a barra lateral e o painel (folgas iguais); painel colado à direita
     grid-template-columns:
-      #{$barra} minmax(1rem, 1fr) minmax(0, #{$texto}) #{$painel}
-      minmax(1rem, 1fr);
+      #{$barra} minmax(1.5rem, 1fr) minmax(0, #{$texto}) minmax(1.5rem, 1fr)
+      #{$painel} 1.5rem;
   }
 
   & .center {
@@ -120,14 +121,14 @@ $texto: 48rem;
     @media all and (min-width: 1200px) {
       display: flex;
       grid-area: auto;
-      grid-column: 4;
+      grid-column: 5;
       grid-row: 1;
       position: sticky;
       top: 0;
       align-self: start;
       height: 100vh;
       box-sizing: border-box;
-      padding: calc(var(--altura-topo) + 1.5rem) 0 1.5rem 1.75rem;
+      padding: calc(var(--altura-topo) + 1.5rem) 0 1.5rem 0;
       margin: 0;
       overflow-y: auto;
     }
@@ -256,12 +257,7 @@ button:focus-visible {
   opacity: 1 !important;
 }
 
-// Medida de leitura: ~72 caracteres nos parágrafos e listas (cards e listas ocupam a largura toda)
-article {
-  & p,
-  & ul,
-  & ol,
-  & blockquote {
-    max-width: 72ch;
-  }
+// A capa não passa de 24rem de altura (a coluna central ficou mais larga)
+.capa-post img {
+  max-height: 24rem;
 }

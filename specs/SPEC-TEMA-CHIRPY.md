@@ -44,15 +44,15 @@ Os pontos de quebra ficam em `custom.scss`. As variáveis do Quartz (800 e 1200 
 │  Barra     │ Barra superior (breadcrumb    │              │
 │  lateral   │ + busca)                      │   Painel     │
 │  260 px    ├───────────────────────────────┤   direito    │
-│  (fixa)    │ Conteúdo (máx. 1100 px,       │   280 px     │
-│            │ texto do artigo em ~72 car.)  │   (sticky)   │
+│  (fixa)    │ Conteúdo (máx. 60 rem; o      │   280 px     │
+│            │ texto ocupa a coluna toda)    │   (sticky)   │
 │            ├───────────────────────────────┤              │
 │            │ Rodapé                        │              │
 └────────────┴───────────────────────────────┴──────────────┘
 ```
 
 - A barra lateral usa a área `left` do Quartz (hoje oculta). O painel direito usa a área `right`.
-- A largura de leitura do texto do artigo continua entre 65 e 72 caracteres, corpo em 18 px no desktop. Só cards, listas e o arquivo usam a largura total do conteúdo.
+- Painel direito colado à direita (margem fixa de 1,5 rem) e coluna central centralizada entre a barra lateral e o painel (folgas iguais dos dois lados). A coluna central chega a 60 rem (960 px) e o texto do artigo ocupa a coluna toda, com corpo em 18 px no desktop (decisão do autor, no lugar dos 65 a 72 caracteres por linha).
 
 ## 4. Componentes novos (`quartz/components/`)
 
