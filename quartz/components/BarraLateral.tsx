@@ -189,6 +189,11 @@ if (!window.__gavetaLigada) {
     if (b) { b.setAttribute("aria-expanded", "false"); if (devolverFoco) b.focus() }
   }
   document.addEventListener("click", (e) => {
+    // "Pular para o conteúdo": o SPA do Quartz não move o foco sozinho; sem isso o próximo Tab volta ao início
+    if (e.target.closest(".pular")) {
+      setTimeout(() => document.getElementById("conteudo")?.focus({ preventScroll: true }), 0)
+      return
+    }
     const b = e.target.closest(".menu-botao")
     if (b) {
       if (aberta()) return fechar(true)

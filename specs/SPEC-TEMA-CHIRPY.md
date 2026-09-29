@@ -1,6 +1,6 @@
 # SPEC: Tema visual inspirado no Chirpy
 
-Complemento da [SPEC.md](./SPEC.md). Quando aprovado, **substitui a seção 9 (layout e tema)** e as partes de layout do M4. O restante da SPEC (exportador, deploy, domínio, SEO, testes de privacidade) não muda.
+Complemento da [SPEC.md](./SPEC.md). **Substitui a seção 9 (layout e tema)** e as partes de layout do M4. Status: implementado (marcos T0 a T4). O restante da SPEC (exportador, deploy, domínio, SEO, testes de privacidade) não muda.
 
 Referência de design: [Chirpy](https://github.com/cotes2020/jekyll-theme-chirpy) (Jekyll, licença MIT). Usamos o desenho de layout e a hierarquia de informação. Não copiamos código nem imagens, e o tema de cores e as fontes continuam os nossos.
 

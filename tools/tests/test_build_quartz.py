@@ -106,6 +106,7 @@ def test_layout_seo_e_desempenho(amb, tmp_path):
     assert "/index.xml" in home  # RSS na barra lateral
     assert "Artigos recentes" in home and "Como uso IA no dia a dia" in home.split("Artigos recentes")[1]
     # orçamento de JS (RNF3): o grafo do Quartz (d3 + pixi) passava de 600 KB e derrubava o Lighthouse mobile
+    assert 'getElementById("conteudo")' in (publico / "postscript.js").read_text(encoding="utf-8")  # foco após "pular"
     assert "popover-inner" not in (publico / "postscript.js").read_text(encoding="utf-8")  # sem prévia ao passar o mouse
     assert (publico / "postscript.js").stat().st_size < 250_000
 
