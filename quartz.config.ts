@@ -4,7 +4,7 @@ import { QuartzTransformerPlugin } from "./quartz/plugins/types"
 import PaginaDePasta from "./quartz/components/PaginaDePasta"
 import PaginaDeTag from "./quartz/components/PaginaDeTag"
 
-const BASE_URL = "thyagoluciano.github.io"
+const BASE_URL = "thyagoluciano.com.br"
 
 /**
  * `<html lang="pt-BR">` em todas as páginas (o Quartz usaria só "pt").
@@ -107,6 +107,7 @@ const config: QuartzConfig = {
       Plugin.Static(),
       Plugin.Favicon(),
       Plugin.NotFoundPage(),
+      Plugin.CNAME(),
     ],
   },
 }

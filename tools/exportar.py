@@ -37,7 +37,7 @@ from pathlib import Path
 import yaml
 
 RAIZ = Path(__file__).resolve().parent.parent
-DOMINIO = "thyagoluciano.github.io"
+DOMINIO = "thyagoluciano.com.br"
 
 PASTAS_EXCLUIDAS = {"00-Inbox", "90-Templates", "_sistema", ".obsidian", ".smart-env"}
 PASTAS_GERADAS = ("posts", "radar", "leituras", "assets")

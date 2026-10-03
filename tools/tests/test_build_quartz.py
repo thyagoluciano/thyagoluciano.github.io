@@ -75,17 +75,17 @@ def test_layout_seo_e_desempenho(amb, tmp_path):
 
     artigo, radar, sobre, home = ler("posts/como-uso-ia.html"), ler("radar/quartz.html"), ler("sobre.html"), ler("index.html")
     # SEO e compartilhamento
-    assert '<link rel="canonical" href="https://thyagoluciano.github.io/posts/como-uso-ia"' in artigo
+    assert '<link rel="canonical" href="https://thyagoluciano.com.br/posts/como-uso-ia"' in artigo
     assert 'og:type" content="article"' in artigo and 'og:type" content="website"' in radar
-    assert 'og:image" content="https://thyagoluciano.github.io/assets/' in artigo  # capa da nota
-    assert 'og:image" content="https://thyagoluciano.github.io/static/og-padrao.png"' in radar  # padrão
+    assert 'og:image" content="https://thyagoluciano.com.br/assets/' in artigo  # capa da nota
+    assert 'og:image" content="https://thyagoluciano.com.br/static/og-padrao.png"' in radar  # padrão
     assert 'twitter:card" content="summary_large_image"' in radar
     assert artigo.count('rel="alternate" type="application/rss+xml"') == 1
     assert 'name="description" content="Um relato prático' in artigo
     assert "fonts.googleapis.com" not in artigo  # fontes hospedadas no próprio site
     assert (publico / "static" / "og-padrao.png").exists()
-    assert "Sitemap: https://thyagoluciano.github.io/sitemap.xml" in ler("robots.txt")
-    assert "<loc>https://thyagoluciano.github.io/posts/como-uso-ia</loc>" in ler("sitemap.xml")
+    assert "Sitemap: https://thyagoluciano.com.br/sitemap.xml" in ler("robots.txt")
+    assert "<loc>https://thyagoluciano.com.br/posts/como-uso-ia</loc>" in ler("sitemap.xml")
     # 404 em português
     assert "Esta página é privada ou não existe." in ler("404.html")
     # blocos do layout
@@ -230,10 +230,10 @@ def test_painel_e_post_completo(amb, tmp_path):
 
     # tags no fim do texto e compartilhar com o endereço canônico
     assert artigo.index("</article>") < artigo.index('class="tags"') < artigo.index('class="compartilhar"')
-    url = "https%3A%2F%2Fthyagoluciano.github.io%2Fposts%2Fcomo-uso-ia"
+    url = "https%3A%2F%2Fthyagoluciano.com.br%2Fposts%2Fcomo-uso-ia"
     assert f"linkedin.com/sharing/share-offsite/?url={url}" in artigo
     assert f"x.com/intent/post?url={url}" in artigo
-    assert 'data-url="https://thyagoluciano.github.io/posts/como-uso-ia"' in artigo and 'class="copiar-link"' in artigo
+    assert 'data-url="https://thyagoluciano.com.br/posts/como-uso-ia"' in artigo and 'class="copiar-link"' in artigo
 
     # leia também: mesmo tipo, nunca a própria página
     leia = re.search(r'<section class="leia-tambem">.*?</section>', artigo, re.S).group(0)

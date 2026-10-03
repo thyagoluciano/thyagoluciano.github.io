@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://thyagoluciano.github.io/sitemap.xml
+Sitemap: https://thyagoluciano.com.br/sitemap.xml

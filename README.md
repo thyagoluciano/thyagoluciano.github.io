@@ -1,6 +1,6 @@
 # thyagoluciano.com.br
 
-Site pessoal de Thyago Luciano, gerado com [Quartz v4](https://quartz.jzhao.xyz/) a partir das notas públicas do vault Obsidian `SecondBrain`. Fica no ar em <https://thyagoluciano.github.io> (GitHub Pages).
+Site pessoal de Thyago Luciano, gerado com [Quartz v4](https://quartz.jzhao.xyz/) a partir das notas públicas do vault Obsidian `SecondBrain`. Fica no ar em <https://thyagoluciano.com.br> (GitHub Pages).
 
 O conteúdo é escrito **só no Obsidian**. Um exportador copia para `content/` apenas o que foi marcado para publicar, o Quartz gera o site, e o GitHub Actions faz o deploy.
 

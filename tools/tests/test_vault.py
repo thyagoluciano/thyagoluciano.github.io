@@ -94,7 +94,7 @@ def test_cli_json_e_codigos_de_saida(amb):
     r = cli(*base, "--simular", "--json")
     dados = json.loads(r.stdout)
     assert r.returncode == 0 and len(dados["novas"]) == 6 and len(dados["erros"]) == 11
-    assert dados["novas"][0]["url"].startswith("https://thyagoluciano.github.io/")
+    assert dados["novas"][0]["url"].startswith("https://thyagoluciano.com.br/")
     assert dados["auditoria"]["ok"] is True
     assert cli(*base, "--estrito").returncode == 1
     r = cli("--vault", str(amb.vault / "nada"), "--content", str(amb.content))
