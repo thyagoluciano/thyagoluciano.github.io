@@ -1,0 +1,15 @@
+{
+  "40-Mapas/Mapa - Second Brain.md": {
+    "destino": "temas/second-brain.md",
+    "removida": "2026-09-30",
+    "sha256": "e50cf9854ce85ea8d0fdc41ce081d232ea931e50f512214d315bb6df281f84e5",
+    "slug": "second-brain",
+    "slugs_anteriores": []
+  },
+  "50-Conteudo/Site/Site - course2brain.md": {
+    "destino": "posts/course2brain-transformando-cursos-online-em-notas-conectadas-no-obsidian.md",
+    "sha256": "88385bcfdabf4483c06a64c35c6ea20e0dbcd441790a7b20fbc7838bf6028aff",
+    "slug": "course2brain-transformando-cursos-online-em-notas-conectadas-no-obsidian",
+    "slugs_anteriores": []
+  }
+}

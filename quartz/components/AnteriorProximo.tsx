@@ -3,7 +3,7 @@ import { resolveRelative } from "../util/path"
 import { getDate } from "./Date"
 import { exportada, maisRecentesPrimeiro } from "./ListaDeCards"
 
-// Anterior (mais antiga) e próximo (mais recente) dentro da mesma seção (artigos, ideias, clube, temas).
+// Anterior (mais antiga) e próximo (mais recente) dentro da mesma seção (posts, radar, leituras).
 export default (() => {
   const AnteriorProximo: QuartzComponent = ({ allFiles, fileData, cfg }: QuartzComponentProps) => {
     const secao = fileData.slug!.split("/")[0]

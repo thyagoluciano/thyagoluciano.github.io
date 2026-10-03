@@ -28,13 +28,13 @@ class Ambiente:
         self.content = base / "content"
         self.manifesto = base / "manifesto.json"
         shutil.copytree(FIXTURE_VAULT, self.vault)
-        for pasta in ("artigos", "ideias", "clube", "temas"):
+        for pasta in ("posts", "radar", "leituras"):
             (self.content / pasta).mkdir(parents=True)
             (self.content / pasta / "index.md").write_text(
                 f"---\ntitle: {pasta}\npublish: true\n---\n\nTODO: {pasta}\n", encoding="utf-8"
             )
-        (self.content / "clube" / "index.md").write_text(
-            "---\ntitle: Clube\npublish: true\n---\n\nTODO: clube\n\n"
+        (self.content / "leituras" / "index.md").write_text(
+            "---\ntitle: Leituras\npublish: true\n---\n\nTODO: leituras\n\n"
             f"{exportar.MARCA_INICIO}\n{exportar.MARCA_FIM}\n",
             encoding="utf-8",
         )

@@ -20,16 +20,16 @@ Publicar **thyagoluciano.com.br** como um site estático gerado a partir do vaul
 
 1. Escrevo **só no Obsidian**. Publicar é marcar `publicar: true` e rodar um comando.
 2. **Nada privado vaza**: só sai o que foi marcado, e links para notas privadas viram texto.
-3. As notas publicadas mantêm os **links entre si**, com backlinks e grafo (um "jardim digital").
-4. O site tem artigos, ideias, a seção do clube do livro, página sobre e acesso à newsletter.
+3. As notas publicadas mantêm os **links entre si** como links comuns. O jardim digital (ideias atômicas, backlinks e grafo) vive no Obsidian; o site mostra só o que foi publicado.
+4. O site tem posts, um radar de projetos e ferramentas de outras pessoas, leituras, página sobre e acesso à newsletter.
 
 ## 3. Público
 
 | Público | O que busca |
 |---|---|
-| Profissionais de tecnologia (LinkedIn, X) | Artigos aprofundados sobre IA, engenharia e liderança |
+| Profissionais de tecnologia (LinkedIn, X) | Posts aprofundados sobre IA, engenharia e liderança, e boas ferramentas para experimentar |
 | Assinantes da newsletter | Textos longos e o arquivo completo |
-| Leitores do clube do livro | Resenhas, sínteses e ideias por livro |
+| Leitores das leituras | Resenhas, comentários e sínteses por livro |
 | Eu | Um lugar para apontar em todos os canais |
 
 ## 4. Casos de uso
@@ -39,10 +39,11 @@ Publicar **thyagoluciano.com.br** como um site estático gerado a partir do vaul
 | UC1 | autor | marcar uma nota com `publicar: true` e rodar `publicar` | ver o texto no ar em poucos minutos |
 | UC2 | autor | ver uma prévia antes de publicar | revisar o resultado no navegador |
 | UC3 | autor | ter a garantia de que destaques e notas privadas não saem | publicar sem medo |
-| UC4 | leitor | navegar de um artigo para ideias relacionadas | aprofundar no tema |
-| UC5 | leitor | buscar no site e filtrar por tema | achar o que interessa |
+| UC4 | leitor | navegar de um post para outros posts relacionados | aprofundar no assunto |
+| UC5 | leitor | buscar no site e filtrar por tag | achar o que interessa |
 | UC6 | leitor | assinar por RSS ou pela newsletter | acompanhar novas publicações |
-| UC7 | leitor | ver o que estou lendo e as resenhas do clube | acompanhar o clube do livro |
+| UC7 | leitor | ver o que estou lendo e as resenhas | acompanhar as leituras |
+| UC9 | leitor | ver projetos e ferramentas que o autor quer usar, está testando ou já usa | descobrir boas ferramentas e saber a opinião dele |
 | UC8 | autor | compartilhar um link com prévia bonita (título, descrição, imagem) | aumentar cliques vindos das redes |
 
 ## 5. Requisitos funcionais
@@ -50,14 +51,32 @@ Publicar **thyagoluciano.com.br** como um site estático gerado a partir do vaul
 ### RF1. Seções do site
 | Seção | Conteúdo | Origem no vault |
 |---|---|---|
-| `/` (início) | Apresentação curta, artigos recentes, "lendo agora", chamada para a newsletter | Página escrita no repositório + dados gerados |
-| `/artigos/` | Peças canônicas | `50-Conteudo/Site/` (`tipo: conteudo`, `canal: site`) |
-| `/ideias/` | Notas atômicas públicas (jardim) | `20-Ideias/` |
-| `/clube/` | Livro atual, fila, resenhas e encontros | `10-Fontes/Livros/*/Livro - *.md`, `60-Clube/` |
-| `/temas/` | Páginas de tema (mapas publicados) | `40-Mapas/` |
+| `/` (início) | Apresentação curta, posts recentes, "lendo agora", link para a newsletter | Página escrita no repositório + dados gerados |
+| `/posts/` | Peças canônicas: artigos, ensaios e notas longas | `50-Conteudo/Site/` (`tipo: conteudo`, `canal: site`) |
+| `/radar/` | Vitrine de projetos e ferramentas de outras pessoas que quero usar ou experimentar, cada um com estado (quero testar, testando, uso, descartei) | Notas `tipo: ferramenta` (ver RF1.1) |
+| `/leituras/` | Livro atual, resenhas e comentários do que estou lendo; encontros, se o projeto virar um clube | `10-Fontes/Livros/*/Livro - *.md`, `60-Clube/` |
 | `/sobre` | Quem sou, contatos, redes | Página escrita no repositório |
-| `/newsletter` | Assinatura do Substack e arquivo | Página escrita no repositório |
+| `/newsletter` | Assinatura do Substack (link para `thyagoluciano.substack.com/subscribe`) | Página escrita no repositório |
 | `/tags/…` | Listagem por tag | Gerado |
+| `/arquivo` | Linha do tempo de tudo o que foi publicado, por ano e mês | Gerado |
+
+### RF1.1 Radar (notas `tipo: ferramenta`)
+Projetos e ferramentas **de outras pessoas**. Campos do frontmatter no vault (todos saem para o site, exceto o que não consta aqui):
+
+| Campo | Obrigatório | Descrição |
+|---|---|---|
+| `titulo` | sim | Nome da ferramenta |
+| `url` | sim | Endereço do projeto (`http` ou `https`) |
+| `autor_projeto` | sim | Pessoa ou organização que criou (crédito) |
+| `categoria` | sim | Uma categoria (por exemplo IA, terminal, publicação) |
+| `estado` | sim | `quero-testar`, `testando`, `uso` ou `descartei` |
+| `por_que` | sim | Uma ou duas frases sobre por que me interessou |
+| `repositorio` | não | Endereço do repositório |
+| `licenca` | não | Licença (por exemplo MIT) |
+
+Referências de desenho: Technology Radar da Thoughtworks (estados), listas `awesome-*` do GitHub e coleções como Raindrop e Are.na.
+
+Fora do site: notas `tipo: ideia` e `tipo: mapa` continuam no Obsidian e nunca são exportadas. Marcá-las com `publicar: true` gera erro de exportação.
 
 ### RF2. Exportação do vault
 - Seleciona só notas com `publicar: true` e campos obrigatórios preenchidos.
@@ -69,15 +88,15 @@ Publicar **thyagoluciano.com.br** como um site estático gerado a partir do vaul
 - Tem modo de simulação (mostra o que entra, sai e muda, sem escrever).
 
 ### RF3. Navegação e descoberta
-- Links entre notas, backlinks ("mencionado em"), grafo local. Sem prévia ao passar o mouse (removida por decisão do autor).
+- Links entre notas publicadas, como links comuns. Sem backlinks, sem grafo e sem prévia ao passar o mouse (removidos por decisão do autor).
 - Busca no site.
-- Índice por tags e por tema.
-- Artigos recentes na página inicial.
+- Índice por tags e linha do tempo (`/arquivo`).
+- Posts recentes na página inicial.
 
 ### RF4. Distribuição
 - RSS, sitemap, metadados Open Graph e Twitter Card em todas as páginas.
 - Imagem de prévia por página (capa definida ou gerada automaticamente).
-- Chamada para assinar a newsletter no fim dos artigos.
+- Acesso à newsletter pelo menu (página `/newsletter`) e pelo ícone do Substack na barra lateral. Sem bloco de chamada no fim dos posts.
 
 ### RF5. Publicação
 - Um comando: exporta, gera o site localmente para validar, faz commit e push.
@@ -113,25 +132,23 @@ Publicar **thyagoluciano.com.br** como um site estático gerado a partir do vaul
 | M1 | Quartz configurado em pt-BR, deploy no endereço padrão do GitHub Pages | Site de teste no ar |
 | M2 | Exportador com testes (vault de exemplo) | Testes de privacidade e links passam |
 | M3 | Domínio thyagoluciano.com.br com HTTPS | Domínio e `www` respondendo com certificado |
-| M4 | Layout, tema visual e páginas fixas (início, sobre, newsletter, clube) | Lighthouse ≥ 95; revisão visual aprovada |
-| M5 | Primeiro artigo real publicado e fluxo documentado no `_guia-ia.md` | Artigo no ar, com prévia correta ao compartilhar |
+| M4 | Layout, tema visual e páginas fixas (início, sobre, newsletter, leituras) | Lighthouse ≥ 95; revisão visual aprovada |
+| M5 | Primeiro post real publicado e fluxo documentado no `_guia-ia.md` | Post no ar, com prévia correta ao compartilhar |
 
 ## 9. Métricas de sucesso
 
-- Publicar um artigo leva menos de 5 minutos entre marcar `publicar: true` e estar no ar.
+- Publicar um post leva menos de 5 minutos entre marcar `publicar: true` e estar no ar.
 - Zero vazamentos (auditoria do exportador em todo build).
-- Pelo menos 1 artigo por semana nos 3 primeiros meses.
+- Pelo menos 1 post por semana nos 3 primeiros meses.
 - Todo post nas redes aponta para uma página do site.
 
 ## 10. Decisões pendentes
 
 | Decisão | Padrão, se não houver resposta |
 |---|---|
-| Endereço do Substack | Página `/newsletter` com espaço reservado |
 | Analytics | Nenhum na v1 (depois: Plausible, Umami ou GoatCounter) |
 | Foto, bio curta e links para a página sobre | Espaço reservado |
 | Identidade visual (cores, fontes) | Tema neutro definido na SPEC |
-| Publicar os mapas de tema (`/temas/`) | Sim, quando marcados com `publicar: true` |
 
 ## 11. Riscos
 

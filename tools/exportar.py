@@ -7,7 +7,7 @@
 
 Regras na SPEC (specs/SPEC.md, seção 6). Resumo:
 - lê o vault (somente leitura) e seleciona notas com `publicar: true` que cumpram as regras;
-- escreve só em content/{artigos,ideias,clube,temas,assets}, sempre num diretório de
+- escreve só em content/{posts,radar,leituras,assets}, sempre num diretório de
   preparação (staging); só copia para `content/` se a auditoria de privacidade passar;
 - mantém `tools/manifesto.json` para URLs estáveis.
 
@@ -37,11 +37,11 @@ from pathlib import Path
 import yaml
 
 RAIZ = Path(__file__).resolve().parent.parent
-DOMINIO = "thyagoluciano.com.br"
+DOMINIO = "thyagoluciano.github.io"
 
 PASTAS_EXCLUIDAS = {"00-Inbox", "90-Templates", "_sistema", ".obsidian", ".smart-env"}
-PASTAS_GERADAS = ("artigos", "ideias", "clube", "temas", "assets")
-PASTAS_DE_NOTAS = PASTAS_GERADAS[:4]
+PASTAS_GERADAS = ("posts", "radar", "leituras", "assets")
+PASTAS_DE_NOTAS = PASTAS_GERADAS[:3]
 EXT_IMAGEM = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg"}
 
 CAMPOS_PERMITIDOS = (
@@ -55,11 +55,25 @@ CAMPOS_PERMITIDOS = (
     "publish",
     "gerado",
     "tipo",
-    "temas",
     "capa",
     "autor_livro",
     "nota",
+    # Radar (tipo: ferramenta)
+    "url",
+    "repositorio",
+    "autor_projeto",
+    "categoria",
+    "estado",
+    "por_que",
+    "licenca",
 )
+
+# Radar: projetos de outras pessoas que o autor quer usar ou experimentar
+ESTADOS_RADAR = ("quero-testar", "testando", "uso", "descartei")
+CAMPOS_RADAR_OBRIGATORIOS = ("url", "autor_projeto", "categoria", "estado", "por_que")
+CAMPOS_RADAR_OPCIONAIS = ("repositorio", "licenca")
+TIPOS_SO_NO_OBSIDIAN = ("ideia", "mapa")  # continuam no vault, nunca vão para o site
+URL_HTTP = re.compile(r"^https?://\S+$", re.I)
 
 SF_DATALESS = 0x40000000  # arquivo do iCloud que ainda não foi baixado
 TENTATIVAS_DOWNLOAD = 3
@@ -69,7 +83,7 @@ MARCA_INICIO = "<!-- gerado:lendo-agora -->"
 MARCA_FIM = "<!-- /gerado:lendo-agora -->"
 
 PREFIXO = re.compile(
-    r"^(?:Site|Livro|Mapa|Ideia|Encontro|Fonte|Conteúdo|Conteudo|Destaques|Clube|Artigo) - "
+    r"^(?:Site|Livro|Mapa|Ideia|Encontro|Fonte|Conteúdo|Conteudo|Destaques|Clube|Artigo|Ferramenta) - "
 )
 SLUG = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 FRONTMATTER = re.compile(r"\A---[ \t]*\n(.*?)^---[ \t]*$\n?(.*)\Z", re.S | re.M)
@@ -172,8 +186,8 @@ class Nota:
 class Elegivel:
     nota: Nota
     slug: str
-    pasta: str  # artigos, ideias, clube, clube/encontros, temas
-    tipo: str  # artigo, ideia, resenha, encontro, tema
+    pasta: str  # posts, radar, leituras, leituras/encontros
+    tipo: str  # post, ferramenta, resenha, encontro
     titulo: str
 
     @property
@@ -255,16 +269,31 @@ def para_data(valor) -> date | None:
 def destino_de(fm: dict) -> tuple[str, str] | None:
     tipo, sub = fm.get("tipo"), fm.get("subtipo")
     if tipo == "conteudo" and fm.get("canal") == "site":
-        return "artigos", "artigo"
-    if tipo == "ideia":
-        return "ideias", "ideia"
+        return "posts", "post"
+    if tipo == "ferramenta":
+        return "radar", "ferramenta"
     if tipo == "fonte" and sub == "livro":
-        return "clube", "resenha"
+        return "leituras", "resenha"
     if tipo == "encontro":
-        return "clube/encontros", "encontro"
-    if tipo == "mapa":
-        return "temas", "tema"
+        return "leituras/encontros", "encontro"
     return None
+
+
+def verificar_ferramenta(fm: dict) -> list[str]:
+    """Campos do Radar (PRD RF1): obrigatórios, estado válido e endereço http(s)."""
+    motivos: list[str] = []
+    for campo in CAMPOS_RADAR_OBRIGATORIOS:
+        valor = fm.get(campo)
+        if not isinstance(valor, str) or not valor.strip():
+            motivos.append(f"ferramenta sem '{campo}'")
+    estado = fm.get("estado")
+    if isinstance(estado, str) and estado.strip() and estado.strip() not in ESTADOS_RADAR:
+        motivos.append(f"estado '{estado}' inválido (use {', '.join(ESTADOS_RADAR)})")
+    for campo in ("url", "repositorio"):
+        valor = fm.get(campo)
+        if isinstance(valor, str) and valor.strip() and not URL_HTTP.match(valor.strip()):
+            motivos.append(f"'{campo}' deve começar com http:// ou https://")
+    return motivos
 
 
 def verificar(nota: Nota, hoje: date) -> list[str]:
@@ -281,6 +310,11 @@ def verificar(nota: Nota, hoje: date) -> list[str]:
     if destino is None:
         if fm.get("tipo") == "conteudo":
             motivos.append(f"canal '{fm.get('canal')}' não é 'site'")
+        elif fm.get("tipo") in TIPOS_SO_NO_OBSIDIAN:
+            motivos.append(
+                f"tipo '{fm.get('tipo')}' não é publicado no site (fica só no Obsidian); "
+                "remova 'publicar: true'"
+            )
         else:
             motivos.append(f"tipo '{fm.get('tipo')}' não é exportável")
     slug = fm.get("slug")
@@ -290,13 +324,15 @@ def verificar(nota: Nota, hoje: date) -> list[str]:
         motivos.append(f"slug '{slug}' inválido (use a-z, 0-9 e hífens)")
     elif slug == "index":
         motivos.append("slug 'index' é reservado")
-    elif destino and destino[0] == "clube" and slug == "encontros":
-        motivos.append("slug 'encontros' é reservado no clube")
+    elif destino and destino[0] == "leituras" and slug == "encontros":
+        motivos.append("slug 'encontros' é reservado em leituras")
     descricao = fm.get("descricao")
     if not isinstance(descricao, str) or not descricao.strip():
         motivos.append("sem descricao")
     elif len(descricao.strip()) > 160:
         motivos.append(f"descricao com {len(descricao.strip())} caracteres (máximo 160)")
+    if destino and destino[1] == "ferramenta":
+        motivos.extend(verificar_ferramenta(fm))
     if fm.get("tipo") == "conteudo" and destino:
         status = fm.get("status")
         if status not in ("publicado", "agendado"):
@@ -580,13 +616,6 @@ def montar_frontmatter(el: Elegivel, ctx: Contexto, aliases: list[str]) -> dict:
     saida["publish"] = True
     saida["gerado"] = True
     saida["tipo"] = el.tipo
-    temas = []
-    for valor in _lista(fm.get("temas")):
-        alvo = ctx.indice.resolver(_nome_do_link(valor))
-        if alvo and alvo.pasta == "temas" and alvo.titulo not in temas:
-            temas.append(alvo.titulo)
-    if temas:
-        saida["temas"] = temas
     if fm.get("capa"):
         nome = _nome_do_link(fm["capa"])
         if Path(nome).suffix.lower() in EXT_IMAGEM:
@@ -595,6 +624,11 @@ def montar_frontmatter(el: Elegivel, ctx: Contexto, aliases: list[str]) -> dict:
                 saida["capa"] = capa
         else:
             ctx.avisos.append(f"{el.nota.caminho}: capa '{nome}' não é imagem; ignorada")
+    if el.tipo == "ferramenta":
+        for campo in (*CAMPOS_RADAR_OBRIGATORIOS, *CAMPOS_RADAR_OPCIONAIS):
+            valor = fm.get(campo)
+            if isinstance(valor, str) and valor.strip():
+                saida[campo] = valor.strip()
     if el.tipo == "resenha":
         if fm.get("autor"):
             saida["autor_livro"] = strip_prefixo(_nome_do_link(fm["autor"]))
@@ -806,13 +840,13 @@ def montar_lendo_agora(elegiveis: dict[str, Elegivel]) -> str:
 
 
 def atualizar_lendo_agora(content: Path, elegiveis: dict[str, Elegivel], avisos: list[str]) -> None:
-    alvo = content / "clube" / "index.md"
+    alvo = content / "leituras" / "index.md"
     if not alvo.exists():
-        avisos.append("clube/index.md não existe; bloco 'lendo agora' não atualizado")
+        avisos.append("leituras/index.md não existe; bloco 'lendo agora' não atualizado")
         return
     texto = alvo.read_text(encoding="utf-8")
     if not BLOCO.search(texto):
-        avisos.append("clube/index.md sem os marcadores de 'lendo agora'; bloco não atualizado")
+        avisos.append("leituras/index.md sem os marcadores de 'lendo agora'; bloco não atualizado")
         return
     novo = BLOCO.sub(
         lambda _: f"{MARCA_INICIO}\n{montar_lendo_agora(elegiveis)}\n{MARCA_FIM}", texto, count=1

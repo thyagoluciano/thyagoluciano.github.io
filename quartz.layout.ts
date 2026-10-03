@@ -1,14 +1,10 @@
 import { PageLayout, SharedLayout } from "./quartz/cfg"
-import { FullSlug } from "./quartz/util/path"
 import * as Component from "./quartz/components"
 // Componentes novos (SPEC 9.3 e SPEC-TEMA-CHIRPY): importados direto para não editar o index.ts do Quartz
 import Cabeca from "./quartz/components/Cabeca"
-import Newsletter from "./quartz/components/Newsletter"
-import MencionadoEm from "./quartz/components/MencionadoEm"
-import ListaDeCards from "./quartz/components/ListaDeCards"
+import Vitrines from "./quartz/components/Vitrines"
 import Arquivo from "./quartz/components/Arquivo"
 import Rodape from "./quartz/components/Rodape"
-import Grafo from "./quartz/components/Grafo"
 import BarraLateral from "./quartz/components/BarraLateral"
 import BarraSuperior from "./quartz/components/BarraSuperior"
 import RedesSociais from "./quartz/components/RedesSociais"
@@ -20,16 +16,15 @@ import CapaDoPost from "./quartz/components/CapaDoPost"
 import Compartilhar from "./quartz/components/Compartilhar"
 import LeiaTambem from "./quartz/components/LeiaTambem"
 import AnteriorProximo from "./quartz/components/AnteriorProximo"
-import NotasDoTema from "./quartz/components/NotasDoTema"
 
-// TODO: confirmar os endereços das redes. Endereço vazio = o link não aparece.
-const SUBSTACK_URL = "" // decisão pendente (PRD §10): sem endereço, o botão leva para /newsletter
-const FRASE = "TODO: frase curta sobre você" // decisão pendente (SPEC-TEMA-CHIRPY §13)
+// Redes e contato. Endereço vazio = o link não aparece.
+const SUBSTACK_URL = "https://thyagoluciano.substack.com/subscribe" // vazio: o botão leva para /newsletter
+const FRASE = "Desenvolvedor, explorando tecnologias e compartilhando conhecimento."
 const REDES: Record<string, string> = {
   LinkedIn: "https://www.linkedin.com/in/thyagoluciano",
-  X: "https://x.com/thyagoluciano",
-  Threads: "https://www.threads.net/@thyagoluciano",
-  Instagram: "https://www.instagram.com/thyagoluciano",
+  // X: "https://x.com/thyagoluciano",
+  // Threads: "https://www.threads.net/@thyagoluciano",
+  // Instagram: "https://www.instagram.com/thyagoluciano",
   Substack: SUBSTACK_URL,
   RSS: "/index.xml",
   GitHub: "https://github.com/thyagoluciano",
@@ -77,13 +72,7 @@ export const sharedPageComponents: SharedLayout = {
   header: barraSuperior,
   afterBody: [
     Component.ConditionalRender({
-      component: ListaDeCards({
-        titulo: "Artigos recentes",
-        limite: 10,
-        filtro: (f) => f.slug!.startsWith("artigos/") && f.slug !== "artigos/index",
-        verTodos: { texto: "Ver todos", slug: "arquivo" as FullSlug },
-        vazio: "Os primeiros artigos chegam em breve.",
-      }),
+      component: Vitrines(),
       condition: (page) => slugDe(page) === "index",
     }),
     Component.ConditionalRender({
@@ -101,30 +90,11 @@ export const sharedPageComponents: SharedLayout = {
     }),
     Component.ConditionalRender({
       component: LeiaTambem(),
-      condition: (page) => ["artigo", "ideia", "resenha"].includes(tipoDe(page)),
+      condition: (page) => ["post", "resenha"].includes(tipoDe(page)),
     }),
     Component.ConditionalRender({
       component: AnteriorProximo(),
-      condition: (page) => geradoPeloExportador(page) && tipoDe(page) !== "tema",
-    }),
-    Component.ConditionalRender({
-      component: NotasDoTema(),
-      condition: (page) => tipoDe(page) === "tema",
-    }),
-    Component.ConditionalRender({
-      component: Newsletter({ substackUrl: SUBSTACK_URL }),
-      condition: (page) => !["sobre", "newsletter", "404"].includes(slugDe(page)),
-    }),
-    MencionadoEm(),
-    // grafo local só em ideias e temas
-    Component.ConditionalRender({
-      component: Grafo(),
-      condition: (page) => /^(ideias|temas)\//.test(slugDe(page)) && !/\/index$/.test(slugDe(page)),
-    }),
-    // grafo global na página /temas/
-    Component.ConditionalRender({
-      component: Grafo({ global: true }),
-      condition: (page) => slugDe(page) === "temas/index",
+      condition: geradoPeloExportador,
     }),
     VoltarAoTopo(),
   ],
@@ -139,7 +109,10 @@ export const defaultContentPageLayout: PageLayout = {
       component: CapaDoPost(),
       condition: geradoPeloExportador,
     }),
-    Component.ArticleTitle(),
+    Component.ConditionalRender({
+      component: Component.ArticleTitle(),
+      condition: (page) => slugDe(page) !== "index",
+    }),
     Component.ConditionalRender({
       component: MetaDoPost(),
       condition: geradoPeloExportador,

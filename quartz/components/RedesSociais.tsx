@@ -21,15 +21,28 @@ export default ((opts?: Options) => {
   const links = opts?.links ?? {}
 
   const RedesSociais: QuartzComponent = ({ fileData }: QuartzComponentProps) => {
+    const interno = (link: string) => link.startsWith("/")
     const href = (link: string) =>
-      link.startsWith("/") ? joinSegments(pathToRoot(fileData.slug!), link.slice(1)) : link
+      interno(link) ? joinSegments(pathToRoot(fileData.slug!), link.slice(1)) : link
     return (
       <ul class="redes" aria-label="Redes e contato">
         {Object.entries(links).map(([nome, link]) => (
           <li>
-            <a href={href(link)} aria-label={nome} title={nome} rel="me noopener">
-              <Icone nome={ICONES[nome] ?? "sobre"} tamanho={18} />
-            </a>
+            {interno(link) ? (
+              <a href={href(link)} aria-label={nome} title={nome}>
+                <Icone nome={ICONES[nome] ?? "sobre"} tamanho={18} />
+              </a>
+            ) : (
+              <a
+                href={href(link)}
+                aria-label={nome}
+                title={nome}
+                target="_blank"
+                rel="me noopener noreferrer"
+              >
+                <Icone nome={ICONES[nome] ?? "sobre"} tamanho={18} />
+              </a>
+            )}
           </li>
         ))}
       </ul>

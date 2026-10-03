@@ -77,7 +77,7 @@ export default (() => {
         <meta property="og:title" content={title} />
         <meta
           property="og:type"
-          content={fileData.frontmatter?.tipo === "artigo" ? "article" : "website"}
+          content={fileData.frontmatter?.tipo === "post" ? "article" : "website"}
         />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={title} />

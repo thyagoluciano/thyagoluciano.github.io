@@ -4,7 +4,7 @@ import { QuartzTransformerPlugin } from "./quartz/plugins/types"
 import PaginaDePasta from "./quartz/components/PaginaDePasta"
 import PaginaDeTag from "./quartz/components/PaginaDeTag"
 
-const BASE_URL = "thyagoluciano.com.br"
+const BASE_URL = "thyagoluciano.github.io"
 
 /**
  * `<html lang="pt-BR">` em todas as páginas (o Quartz usaria só "pt").
@@ -88,7 +88,7 @@ const config: QuartzConfig = {
       Plugin.ObsidianFlavoredMarkdown({ enableInHtmlEmbed: false }),
       Plugin.GitHubFlavoredMarkdown(),
       Plugin.TableOfContents(),
-      Plugin.CrawlLinks({ markdownLinkResolution: "absolute" }),
+      Plugin.CrawlLinks({ markdownLinkResolution: "absolute", openLinksInNewTab: true }),
       Plugin.Description(),
     ],
     filters: [Plugin.ExplicitPublish()], // 2ª barreira: só páginas com publish: true,
@@ -107,7 +107,6 @@ const config: QuartzConfig = {
       Plugin.Static(),
       Plugin.Favicon(),
       Plugin.NotFoundPage(),
-      Plugin.CNAME(),
     ],
   },
 }

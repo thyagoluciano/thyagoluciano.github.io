@@ -3,20 +3,27 @@ import { FullSlug, resolveRelative } from "../util/path"
 import { classNames } from "../util/lang"
 
 interface Options {
-  /** Página de assinatura do Substack. Sem ela, o botão leva para /newsletter. */
+  /** Página de assinatura do Substack (`/subscribe`). Sem ela, o botão leva para /newsletter. */
   substackUrl?: string
 }
 
 export default ((opts?: Options) => {
   const Newsletter: QuartzComponent = ({ fileData, displayClass }: QuartzComponentProps) => {
+    const externo = Boolean(opts?.substackUrl)
     const destino = opts?.substackUrl || resolveRelative(fileData.slug!, "newsletter" as FullSlug)
     return (
       <aside class={classNames(displayClass, "newsletter")} aria-labelledby="newsletter-titulo">
-        <h2 id="newsletter-titulo">Receba os novos textos</h2>
-        <p>Um e-mail quando eu publicar algo novo, com o texto completo.</p>
-        <a class="newsletter-botao" href={destino}>
+        <h2 id="newsletter-titulo">Receba a newsletter</h2>
+        <p>Uma seleção dos textos e ideias, enviada periodicamente por e-mail.</p>
+        <a
+          class="newsletter-botao"
+          href={destino}
+          target={externo ? "_blank" : undefined}
+          rel={externo ? "noopener noreferrer" : undefined}
+        >
           Assinar a newsletter
         </a>
+        <p class="newsletter-aviso">O cadastro é feito no Substack.</p>
       </aside>
     )
   }
@@ -49,6 +56,11 @@ export default ((opts?: Options) => {
 .newsletter .newsletter-botao:hover {
   background: var(--tertiary);
   color: var(--light);
+}
+.newsletter .newsletter-aviso {
+  margin: 0.75rem 0 0;
+  font-size: 0.85rem;
+  color: var(--darkgray);
 }
 `
   return Newsletter

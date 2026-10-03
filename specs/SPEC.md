@@ -87,18 +87,16 @@ content/
 ├── index.md              # fixo (escrito no repositório)
 ├── sobre.md              # fixo
 ├── newsletter.md         # fixo
-├── artigos/              # GERADO
+├── posts/                # GERADO
 │   └── index.md          # fixo: introdução da seção
-├── ideias/               # GERADO
+├── radar/                # GERADO (projetos e ferramentas de outras pessoas)
 │   └── index.md          # fixo
-├── clube/                # GERADO (resenhas e encontros)
+├── leituras/             # GERADO (resenhas e encontros)
 │   └── index.md          # fixo + bloco "lendo agora" gerado (seção 6.8)
-├── temas/                # GERADO
-│   └── index.md          # fixo
 └── assets/               # GERADO (imagens usadas)
 ```
 
-- O exportador **só escreve** em `artigos/`, `ideias/`, `clube/`, `temas/` e `assets/`, e nunca apaga ou sobrescreve arquivos `index.md` dessas pastas.
+- O exportador **só escreve** em `posts/`, `radar/`, `leituras/` e `assets/`, e nunca apaga ou sobrescreve arquivos `index.md` dessas pastas.
 - Arquivos gerados levam no frontmatter `gerado: true`. O exportador só remove arquivos com essa marca.
 
 ## 6. Exportador (`tools/exportar.py`)
@@ -122,12 +120,14 @@ Nota com `publicar: true` que falhe em qualquer regra: **erro** listado; com `--
 ### 6.2 Destino
 | Nota no vault | Destino |
 |---|---|
-| `tipo: conteudo`, `canal: site` | `content/artigos/<slug>.md` |
-| `tipo: ideia` | `content/ideias/<slug>.md` |
-| `tipo: fonte`, `subtipo: livro` | `content/clube/<slug>.md` (resenha) |
-| `tipo: encontro` | `content/clube/encontros/<slug>.md` |
-| `tipo: mapa` | `content/temas/<slug>.md` |
+| `tipo: conteudo`, `canal: site` | `content/posts/<slug>.md` |
+| `tipo: ferramenta` | `content/radar/<slug>.md` |
+| `tipo: fonte`, `subtipo: livro` | `content/leituras/<slug>.md` (resenha) |
+| `tipo: encontro` | `content/leituras/encontros/<slug>.md` |
+| `tipo: ideia`, `tipo: mapa` | Ficam só no Obsidian: nunca exportados (erro se `publicar: true`) |
 | Outros tipos | Não exportados (erro se `publicar: true`) |
+
+Links de notas publicadas para ideias e mapas viram texto simples (regra da seção 6.4).
 
 ### 6.3 Frontmatter de saída (lista de permissão)
 Somente estes campos saem; todo o resto é descartado.
@@ -142,10 +142,13 @@ Somente estes campos saem; todo o resto é descartado.
 | `aliases` | slugs anteriores (manifesto, seção 6.7) |
 | `publish` | `true` (sempre) |
 | `gerado` | `true` (sempre) |
-| `tipo` | `artigo`, `ideia`, `resenha`, `encontro` ou `tema` |
-| `temas` | títulos dos mapas em `temas` que **estão publicados**, como lista de texto |
+| `tipo` | `post`, `ferramenta`, `resenha` ou `encontro` |
 | `capa` | caminho da imagem copiada, se `capa` existir |
 | `autor_livro`, `nota` | só para resenhas: nome do autor (texto) e nota 1–5 |
+| `url`, `autor_projeto`, `categoria`, `estado`, `por_que` | só para `tipo: ferramenta` (obrigatórios) |
+| `repositorio`, `licenca` | só para `tipo: ferramenta` (opcionais) |
+
+**Radar (`tipo: ferramenta`).** Além das regras gerais, o exportador reporta erro se faltar `url`, `autor_projeto`, `categoria`, `estado` ou `por_que`, se `estado` não for `quero-testar`, `testando`, `uso` ou `descartei`, ou se `url` ou `repositorio` não começarem com `http://` ou `https://`. O slug `encontros` é reservado em `leituras/`.
 
 ### 6.4 Corpo
 Na ordem:
@@ -178,7 +181,7 @@ Depois de gerar, varrer os arquivos gerados:
 - Renomear ou mover a nota no vault não altera a URL: a identidade é o `slug`. Se a nota não for encontrada pelo caminho, buscar pelo `slug` antes de tratar como removida.
 
 ### 6.8 Dados gerados para páginas fixas
-- `content/clube/index.md` recebe um bloco entre os marcadores `<!-- gerado:lendo-agora -->` e `<!-- /gerado:lendo-agora -->` com o livro com `status_leitura: lendo` e `publicar: true` (título, autor, link se houver resenha). Único caso em que o exportador edita arquivo fixo, e só entre os marcadores.
+- `content/leituras/index.md` recebe um bloco entre os marcadores `<!-- gerado:lendo-agora -->` e `<!-- /gerado:lendo-agora -->` com o livro com `status_leitura: lendo` e `publicar: true` (título, autor, link se houver resenha). Único caso em que o exportador edita arquivo fixo, e só entre os marcadores.
 
 ### 6.9 Saída
 - Resumo: `novas / alteradas / removidas / erros`, com a URL final de cada nota publicada (`https://thyagoluciano.com.br/<destino>/<slug>`), para eu preencher o campo `url` no vault.
@@ -198,6 +201,14 @@ Depois de gerar, varrer os arquivos gerados:
 Também:
 - `npm run previa` → exportar + `npx quartz build --serve` (http://localhost:8080).
 - `npm run simular` → `exportar.py --simular`.
+
+### 7.1 Envio da newsletter (manual)
+
+O Substack guarda a lista de assinantes e faz o envio. Não há integração automática: o site só leva o leitor ao cadastro.
+
+1. Publicar os textos no site (`npm run publicar`).
+2. Periodicamente, montar a edição no editor do Substack, com uma seleção dos textos e ideias, e enviar.
+3. Exportar a lista de assinantes (CSV) do Substack de tempos em tempos, como cópia de segurança.
 
 ## 8. Deploy
 
@@ -225,15 +236,15 @@ Também:
 ### 9.1 Layout (`quartz.layout.ts`)
 | Área | Componentes |
 |---|---|
-| Cabeçalho | Título do site, navegação (Artigos, Ideias, Clube, Temas, Sobre, Newsletter), busca, alternância claro/escuro |
+| Cabeçalho | Título do site, navegação (Posts, Radar, Leituras, Tags, Arquivo, Sobre, Newsletter), busca, alternância claro/escuro |
 | Antes do conteúdo | Breadcrumbs (exceto na home), título, data e tempo de leitura, tags |
-| Depois do conteúdo | Bloco de newsletter (componente novo), backlinks ("Mencionado em"), grafo local |
+| Depois do conteúdo | Tags, compartilhar, "leia também" e anterior/próximo (sem grafo, sem bloco de newsletter e sem backlinks: o grafo, o bloco "Receba a newsletter" e a seção "Mencionado em" foram removidos) |
 | Lateral (desktop) | Sumário da página |
-| Home | Componente de artigos recentes (5) e bloco "lendo agora" |
+| Home | Componente de posts recentes e bloco "lendo agora" |
 | Rodapé | Links: LinkedIn, X, Threads, Instagram, Substack, RSS, GitHub |
 
 - Remover o explorador de arquivos (a navegação é pelo menu).
-- Grafo local só em ideias e temas; grafo global na página `/temas/`.
+- Sem grafo de conexões: o componente `Grafo.tsx` fica no repositório, sem uso, e pode voltar quando houver volume de posts.
 
 ### 9.2 Tema (padrão até haver identidade visual)
 | Token | Claro | Escuro |
@@ -252,7 +263,8 @@ Também:
 - Contraste mínimo de 4,5:1 nos dois temas (verificar).
 
 ### 9.3 Componentes novos (`quartz/components/`)
-- `Newsletter.tsx`: texto curto e botão para a página de assinatura do Substack (ou embed do formulário, se o endereço for definido). Não aparece em `sobre` e `newsletter`.
+- `Newsletter.tsx`: bloco "Receba a newsletter" com botão para `https://thyagoluciano.substack.com/subscribe` e o aviso "O cadastro é feito no Substack." **Fora de uso**: o bloco não é mais renderizado em nenhuma página. O acesso à newsletter fica no menu (página `/newsletter`) e no ícone do Substack da barra lateral (`SUBSTACK_URL` em `quartz.layout.ts`). Sem formulário próprio nem embed.
+- Links externos abrem em nova aba: `RedesSociais.tsx` e `Rodape.tsx` usam `target="_blank"` com `rel` `noopener noreferrer`; nos textos, `Plugin.CrawlLinks` com `openLinksInNewTab: true`. O RSS e os links internos abrem na mesma aba.
 - `LendoAgora.tsx` (opcional): se o bloco da seção 6.8 for insuficiente.
 
 ## 10. SEO e compartilhamento
@@ -269,8 +281,8 @@ Também:
 |---|---|
 | `index.md` | 2–3 frases sobre o site, links para as seções, recentes, lendo agora |
 | `sobre.md` | Bio, foto (`quartz/static/foto.jpg`), temas que estudo, contatos |
-| `newsletter.md` | O que é a newsletter, frequência, botão de assinatura |
-| `artigos/index.md`, `ideias/index.md`, `clube/index.md`, `temas/index.md` | 1 parágrafo explicando a seção |
+| `newsletter.md` | O que é a newsletter, frequência (periódica, sem dia fixo), botão de assinatura para o Substack, aviso de que o cadastro é feito lá e link do RSS. Sem arquivo de edições |
+| `posts/index.md`, `radar/index.md`, `leituras/index.md` | 1 parágrafo explicando a seção |
 
 Todas com `publish: true`. Textos de exemplo marcados com `TODO:` para eu substituir.
 

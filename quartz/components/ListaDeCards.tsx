@@ -8,11 +8,18 @@ import { Date, getDate } from "./Date"
 import Icone from "./Icone"
 
 export const ROTULO_TIPO: Record<string, string> = {
-  artigo: "Artigo",
-  ideia: "Ideia",
+  post: "Post",
+  ferramenta: "Ferramenta",
   resenha: "Resenha",
   encontro: "Encontro",
-  tema: "Tema",
+}
+
+/** Estados de um item do Radar (tipo: ferramenta). */
+export const ROTULO_ESTADO: Record<string, string> = {
+  "quero-testar": "Quero testar",
+  testando: "Testando",
+  uso: "Uso",
+  descartei: "Descartei",
 }
 
 /** Só notas geradas pelo exportador: páginas fixas nunca entram em cards, painéis ou arquivo. */
@@ -53,6 +60,8 @@ export function Cartoes({ paginas, fileData, cfg }: CartoesProps) {
         const minutos = minutosDeLeitura(pagina)
         const capa = typeof fm.capa === "string" && fm.capa ? fm.capa : ""
         const tags: string[] = (fm.tags ?? []).slice(0, 3)
+        const radar = fm.tipo === "ferramenta"
+        const resumo = radar && fm.por_que ? fm.por_que : pagina.description
         return (
           <li class={classNames(undefined, "card", capa ? "com-capa" : "")}>
             {capa && (
@@ -74,7 +83,7 @@ export function Cartoes({ paginas, fileData, cfg }: CartoesProps) {
                   {fm.title}
                 </a>
               </h3>
-              {pagina.description && <p class="card-resumo">{pagina.description}</p>}
+              {resumo && <p class="card-resumo">{resumo}</p>}
               <div class="card-meta">
                 {data && (
                   <span>
@@ -89,6 +98,22 @@ export function Cartoes({ paginas, fileData, cfg }: CartoesProps) {
                   </span>
                 )}
               </div>
+              {radar && (
+                <div class="card-radar">
+                  {ROTULO_ESTADO[fm.estado] && (
+                    <span class={classNames(undefined, "card-estado", `estado-${fm.estado}`)}>
+                      {ROTULO_ESTADO[fm.estado]}
+                    </span>
+                  )}
+                  {fm.autor_projeto && <span>{fm.autor_projeto}</span>}
+                  {fm.categoria && <span>{fm.categoria}</span>}
+                  {fm.url && (
+                    <a class="card-externo" href={fm.url} target="_blank" rel="noopener noreferrer">
+                      Abrir projeto ↗
+                    </a>
+                  )}
+                </div>
+              )}
               {tags.length > 0 && (
                 <ul class="card-tags">
                   {tags.map((tag) => (
@@ -199,6 +224,39 @@ export const CSS_CARDS = `
   gap: 0.3rem;
 }
 .card-tipo {
+  font-weight: 600;
+}
+.card-radar {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.75rem;
+  color: var(--gray);
+  font-family: var(--headerFont);
+  font-size: 0.8rem;
+}
+.card-estado {
+  padding: 0.1rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--lightgray);
+  color: var(--darkgray);
+  font-weight: 600;
+}
+.card-estado.estado-uso {
+  border-color: var(--secondary);
+  color: var(--secondary);
+}
+.card-estado.estado-testando {
+  border-color: var(--tertiary);
+  color: var(--tertiary);
+}
+.card-estado.estado-descartei {
+  text-decoration: line-through;
+}
+.card-externo {
+  margin-left: auto;
   font-weight: 600;
 }
 .card-tags {

@@ -27,8 +27,9 @@ em varias linhas -->
 
 ## Contexto
 
-Ligação simples para [[Ideia - Contexto importa]] e com apelido [[Ideia - Contexto importa|o contexto]].
-Ligação com seção: [[Ideia - Contexto importa#Detalhe|ver o detalhe]].
+Ligação simples para [[Site - Contexto importa]] e com apelido [[Site - Contexto importa|o contexto]].
+Ligação com seção: [[Site - Contexto importa#Detalhe|ver o detalhe]].
+Ideia que fica só no Obsidian: [[Ideia - Contexto importa]] e [[Ideia - Contexto importa|minha ideia]].
 Ligação para a própria nota: [[#Imagens]].
 Nota privada: [[Nota privada de trabalho]], [[Ideia - Segredo]] e inexistente [[Não existe]].
 Privada com apelido: [[Nota privada de trabalho|meu caderno]].

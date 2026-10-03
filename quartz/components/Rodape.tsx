@@ -11,17 +11,28 @@ export default ((opts?: Options) => {
   const Rodape: QuartzComponent = ({ displayClass, fileData }: QuartzComponentProps) => {
     const ano = new Date().getFullYear()
     const links = opts?.links ?? {}
+    const interno = (link: string) => link.startsWith("/")
     const href = (link: string) =>
-      link.startsWith("/") ? joinSegments(pathToRoot(fileData.slug!), link.slice(1)) : link
+      interno(link) ? joinSegments(pathToRoot(fileData.slug!), link.slice(1)) : link
     return (
       <footer class={`${displayClass ?? ""}`}>
         <p>
-          © {ano} Thyago Luciano. Feito com <a href="https://quartz.jzhao.xyz/">Quartz</a>.
+          © {ano} Thyago Luciano. Feito com{" "}
+          <a href="https://quartz.jzhao.xyz/" target="_blank" rel="noopener noreferrer">
+            Quartz
+          </a>
+          .
         </p>
         <ul>
           {Object.entries(links).map(([texto, link]) => (
             <li>
-              <a href={href(link)}>{texto}</a>
+              <a
+                href={href(link)}
+                target={interno(link) ? undefined : "_blank"}
+                rel={interno(link) ? undefined : "noopener noreferrer"}
+              >
+                {texto}
+              </a>
             </li>
           ))}
         </ul>

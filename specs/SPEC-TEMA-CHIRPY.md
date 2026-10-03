@@ -1,6 +1,6 @@
 # SPEC: Tema visual inspirado no Chirpy
 
-Complemento da [SPEC.md](./SPEC.md). **Substitui a seção 9 (layout e tema)** e as partes de layout do M4. Status: implementado (marcos T0 a T4). O restante da SPEC (exportador, deploy, domínio, SEO, testes de privacidade) não muda.
+Complemento da [SPEC.md](./SPEC.md). **Substitui a seção 9 (layout e tema)** e as partes de layout do M4. Status: implementado (marcos T0 a T4). **Reorganização das seções** (change `reorganizar-secoes-do-site`): as seções Artigos, Ideias, Clube e Temas viraram Posts, Radar e Leituras, e o grafo, os backlinks e a página de tema saíram do site. Onde este documento cita as seções antigas, vale o que está descrito na SPEC.md (seções 5, 6.2 e 9). O restante da SPEC (exportador, deploy, domínio, SEO, testes de privacidade) não muda.
 
 Referência de design: [Chirpy](https://github.com/cotes2020/jekyll-theme-chirpy) (Jekyll, licença MIT). Usamos o desenho de layout e a hierarquia de informação. Não copiamos código nem imagens, e o tema de cores e as fontes continuam os nossos.
 
@@ -60,7 +60,7 @@ Todos são arquivos novos, importados direto em `quartz.layout.ts` (sem editar o
 
 | Componente | Onde | Conteúdo e comportamento |
 |---|---|---|
-| `BarraLateral.tsx` | `left` | Avatar redondo (`quartz/static/avatar.png`), título do site, frase curta, menu com ícones (Início, Artigos, Ideias, Clube, Temas, Tags, Arquivo, Sobre, Newsletter), item da página atual destacado (`aria-current`). No rodapé da barra: ícones das redes (a lista `REDES` do layout) e o botão claro/escuro (`Darkmode` do Quartz). |
+| `BarraLateral.tsx` | `left` | Avatar redondo (`quartz/static/avatar.png`), título do site, frase curta, menu com ícones (Início, Posts, Radar, Leituras, Tags, Arquivo, Sobre, Newsletter), item da página atual destacado (`aria-current`). No rodapé da barra: ícones das redes (a lista `REDES` do layout) e o botão claro/escuro (`Darkmode` do Quartz). |
 | `BarraSuperior.tsx` | `header` | Breadcrumb à esquerda, busca (`Search` do Quartz) à direita. No mobile: botão de menu (abre a gaveta), título do site e ícone de busca. |
 | `GavetaMobile` (script dentro de `BarraLateral`) | mobile | Botão com `aria-expanded`, fecha ao navegar (evento `nav`) e com Esc, foco preso enquanto aberta. Fundo escurecido clicável. |
 | `ListaDeCards.tsx` | corpo de pastas e tags (`pageBody`) e home | Lista de cards (seção 5.1). |
@@ -72,11 +72,10 @@ Todos são arquivos novos, importados direto em `quartz.layout.ts` (sem editar o
 | `Compartilhar.tsx` | `afterBody` | Botões LinkedIn, X e copiar link (seção 6.2). |
 | `LeiaTambem.tsx` | `afterBody` | Até 3 posts relacionados (seção 6.2). |
 | `AnteriorProximo.tsx` | `afterBody` | Navegação entre posts da mesma seção (seção 6.2). |
-| `NotasDoTema.tsx` | páginas de tema | Lista as notas que citam o tema (seção 6.4). |
 | `VoltarAoTopo.tsx` | shell | Botão que aparece após rolar 300 px. |
 | `Icone.tsx` | uso interno | Conjunto de ícones SVG (menu, casa, livro, lâmpada, mapa, tag, arquivo, usuário, e-mail, busca, calendário, relógio, pasta, redes, RSS, copiar). Sem dependências. |
 
-Componentes do M4 que continuam: `Cabeca` (head/SEO), `Newsletter`, `MencionadoEm`, `Grafo`, `Rodape`. Saem de uso ao fim do T4: `Cabecalho` (substituído pela barra lateral e superior) e `ArtigosRecentes` (substituído pelos cards da home). Os arquivos são removidos junto com o T4.
+Componentes do M4 que continuam: `Cabeca` (head/SEO) e `Rodape`. `Newsletter` e `Grafo` ficam no repositório sem uso, e `MencionadoEm` e `NotasDoTema` foram removidos. Saem de uso ao fim do T4: `Cabecalho` (substituído pela barra lateral e superior) e `ArtigosRecentes` (substituído pelos cards da home). Os arquivos são removidos junto com o T4.
 
 ## 5. Blocos compartilhados
 
@@ -111,38 +110,38 @@ Os blocos não aparecem quando não há itens.
 ### 6.1 Início (`/`)
 
 1. Introdução (texto de `content/index.md`, hoje com `TODO:`).
-2. "Lendo agora" (transclusão do bloco do clube, como no M4).
+2. "Lendo agora" (transclusão do bloco de leituras, como no M4).
 3. Cards das 10 publicações mais recentes de tipo artigo (seção 13, decisão 2).
 4. Bloco de newsletter.
 
 ### 6.2 Post (artigo, ideia, resenha, encontro)
 
-Ordem: breadcrumb (barra superior) → capa → título → metadados → texto → tags → compartilhar → leia também → anterior/próximo → newsletter → "Mencionado em" → grafo (ideias e temas, como no M4).
+Ordem: breadcrumb (barra superior) → capa → título → metadados → texto → tags → compartilhar → leia também → anterior/próximo. Sem bloco de newsletter, sem "Mencionado em" e sem grafo.
 
 | Bloco | Regra |
 |---|---|
 | Metadados | Data de publicação, "Atualizado em" (só se `modified` ≠ `published`), tempo de leitura, tipo. Ícones de calendário e relógio. |
 | Compartilhar | Links para LinkedIn e X com o endereço canônico da página, e "Copiar link" (único uso de JS aqui, com `aria-live` para confirmar). |
-| Leia também | Até 3 notas exportadas do mesmo tipo de conteúdo (artigo, ideia), pontuadas por tags e temas em comum; empate desempata por data. Sem candidatas com ao menos 1 item em comum, mostra as 3 mais recentes. Nunca inclui a própria página. |
-| Anterior e próximo | Dentro da mesma seção (`artigos/`, `ideias/`...), pela ordem de `dates.published`. Só aparece quando existe pelo menos um vizinho. |
+| Leia também | Até 3 notas exportadas do mesmo tipo de conteúdo (post, resenha), pontuadas por tags em comum; empate desempata por data. Sem candidatas com ao menos 1 item em comum, mostra as 3 mais recentes. Nunca inclui a própria página. |
+| Anterior e próximo | Dentro da mesma seção (`posts/`, `radar/`, `leituras/`), pela ordem de `dates.published`. Só aparece quando existe pelo menos um vizinho. |
 
-### 6.3 Listas de pasta (`/artigos/`, `/ideias/`, `/clube/`, `/temas/`)
+### 6.3 Listas de pasta (`/posts/`, `/radar/`, `/leituras/`)
 
 - Texto de introdução do `index.md` da pasta, seguido de `ListaDeCards` com todas as notas exportadas da pasta (o `pageBody` customizado substitui a lista padrão do Quartz).
-- `/clube/`: o bloco "Lendo agora" fica antes dos cards. Os encontros (`clube/encontros/`) aparecem na mesma lista, com o tipo "Encontro".
-- `/temas/`: mantém o grafo global do M4 acima dos cards.
+- `/leituras/`: o bloco "Lendo agora" fica antes dos cards. Os encontros (`leituras/encontros/`) aparecem na mesma lista, com o tipo "Encontro".
+- `/radar/`: cada card mostra o estado (quero testar, testando, uso, descartei), o autor do projeto, a categoria, a frase "por que" e o link do projeto, que abre em nova aba.
 
-### 6.4 Página de tema (`/temas/<slug>`)
+### 6.4 Página de tema (removida)
 
-Texto do mapa + `NotasDoTema`: cards das notas cujo campo `temas` cita o título do tema (mesma regra de "temas publicados" do exportador).
+Sem páginas de tema: `tipo: mapa` fica só no Obsidian.
 
 ### 6.5 Arquivo (`/arquivo`)
 
-Página fixa `content/arquivo.md` (`publish: true`, texto curto com `TODO:`). O componente `Arquivo` lista todas as notas exportadas de artigos, ideias, resenhas e encontros, agrupadas por ano e mês (mais recente primeiro): dia, título (link) e tipo. Substitui a "categorias" e o "arquivo" do Chirpy.
+Página fixa `content/arquivo.md` (`publish: true`, texto curto com `TODO:`). O componente `Arquivo` lista todas as notas exportadas de posts, radar, resenhas e encontros, agrupadas por ano e mês (mais recente primeiro): dia, título (link) e tipo. Substitui a "categorias" e o "arquivo" do Chirpy.
 
 ### 6.6 Tags (`/tags/`, `/tags/<tag>/`)
 
-Índice com a lista de tags e contagem. Página de tag com os cards. Sem página de categorias: os temas fazem esse papel.
+Índice com a lista de tags e contagem. Página de tag com os cards. Sem página de categorias.
 
 ### 6.7 Sobre, Newsletter e 404
 
@@ -170,7 +169,7 @@ Os tokens de cor do M4 continuam. A identidade visual própria segue pendente (P
 - Link "Pular para o conteúdo" como primeiro item focável, com destino `#conteudo`, âncora inserida antes do título.
 - Navegação por teclado completa (gaveta, busca, cards, botões de compartilhar). Foco sempre visível.
 - Cards inteiros clicáveis pelo título (sem `<a>` aninhado); a imagem tem `alt=""` (decorativa) e `loading="lazy"`, com `width`/`height` para não gerar CLS.
-- Meta de desempenho: Lighthouse mobile ≥ 95 nas quatro categorias em `/`, um artigo, uma ideia, `/artigos/`, `/arquivo` e `/tags/`. CLS < 0,05.
+- Meta de desempenho: Lighthouse mobile ≥ 95 nas quatro categorias em `/`, um post, um item do radar, `/posts/`, `/arquivo` e `/tags/`. CLS < 0,05.
 - O `postscript.js` continua abaixo de 250 KB.
 
 ## 9. Dados usados (nada novo no exportador)
@@ -182,8 +181,8 @@ Só campos que a lista de permissão (SPEC 6.3) já exporta:
 | Título, resumo | `title`, `description` |
 | Datas | `date`/`published`, `modified` |
 | Tags e tags em alta | `tags` |
-| Tipo (Artigo, Ideia...) | `tipo` |
-| Temas e "Notas do tema" | `temas` |
+| Tipo (Post, Ferramenta, Resenha, Encontro) | `tipo` |
+| Cards do Radar (estado, autor, categoria, "por que", link do projeto) | `estado`, `autor_projeto`, `categoria`, `por_que`, `url` |
 | Capa dos cards e do post | `capa` |
 | Filtro de "só notas exportadas" | `gerado: true` |
 | Autor e nota do livro (resenha) | `autor_livro`, `nota` (opcional no card de resenha) |
@@ -231,7 +230,7 @@ Um marco por vez; ao final de cada um, parar para revisão (regra do `CLAUDE.md`
 | # | Decisão | Padrão, se não houver resposta |
 |---|---|---|
 | 1 | Avatar e frase curta da barra lateral | Monograma "TL" (o ícone atual) e frase com `TODO:` |
-| 2 | O que a home lista nos cards | Só artigos (10 mais recentes); ideias e resenhas aparecem no arquivo e nas próprias seções |
+| 2 | O que a home lista nos cards | Só posts (10 mais recentes); itens do radar e resenhas aparecem no arquivo e nas próprias seções |
 | 3 | Miniatura nos cards sem `capa` | Sem imagem (card só de texto) |
 | 4 | Tema padrão na primeira visita | Segue o sistema (`prefers-color-scheme`), com alternância manual |
 | 5 | Tags em alta e "Atualizados recentemente" também nas páginas fixas | Não (só em páginas de conteúdo e listas) |

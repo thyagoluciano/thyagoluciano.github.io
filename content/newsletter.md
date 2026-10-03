@@ -1,11 +1,13 @@
 ---
 title: Newsletter
-description: Assine a newsletter de Thyago Luciano para receber os novos textos por e-mail.
+description: Assine a newsletter de Thyago Luciano para receber uma seleção dos textos e ideias por e-mail.
 publish: true
 ---
 
-TODO: explicar o que é a newsletter e a frequência de envio.
+A newsletter reúne uma seleção dos textos e ideias publicados aqui. Ela é enviada por e-mail de tempos em tempos, sem dia fixo.
 
-TODO: botão de assinatura. O endereço do Substack ainda não foi definido (PRD §10); espaço reservado.
+[Assinar a newsletter](https://thyagoluciano.substack.com/subscribe)
+
+O cadastro e o descadastro são feitos no Substack, que guarda a lista de assinantes e faz o envio.
 
 Se preferir, acompanhe também pelo [RSS](/index.xml).

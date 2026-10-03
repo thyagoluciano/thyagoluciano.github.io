@@ -6,15 +6,12 @@ import { exportada, maisRecentesPrimeiro } from "./ListaDeCards"
 
 const itensEmComum = (a: QuartzPluginData, b: QuartzPluginData) => {
   const em = (f: QuartzPluginData) =>
-    new Set<string>([
-      ...((f.frontmatter?.tags ?? []) as string[]).map((t) => `tag:${t}`),
-      ...((f.frontmatter?.temas ?? []) as string[]).map((t) => `tema:${t}`),
-    ])
+    new Set<string>(((f.frontmatter?.tags ?? []) as string[]).map((t) => `tag:${t}`))
   const B = em(b)
   return [...em(a)].filter((x) => B.has(x)).length
 }
 
-// "Leia também": até 3 notas exportadas do mesmo tipo, com mais tags e temas em comum.
+// "Leia também": até 3 notas exportadas do mesmo tipo, com mais tags em comum.
 // Sem nada em comum, entram as mais recentes. Nunca inclui a própria página.
 export default (() => {
   const LeiaTambem: QuartzComponent = ({ allFiles, fileData, cfg }: QuartzComponentProps) => {

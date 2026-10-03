@@ -19,11 +19,11 @@ const MESES = [
   "Dezembro",
 ]
 
-// Linha do tempo por ano e mês de tudo o que foi exportado (artigos, ideias, resenhas e encontros).
+// Linha do tempo por ano e mês de tudo o que foi exportado (posts, itens do radar, resenhas e encontros).
 export default (() => {
   const Arquivo: QuartzComponent = ({ allFiles, fileData, cfg }: QuartzComponentProps) => {
     const paginas = allFiles
-      .filter((f) => exportada(f) && f.frontmatter?.tipo !== "tema" && getDate(cfg, f))
+      .filter((f) => exportada(f) && getDate(cfg, f))
       .sort(maisRecentesPrimeiro(cfg))
     if (paginas.length === 0) {
       return <p class="cards-vazio">Nenhuma publicação ainda.</p>

@@ -4,7 +4,7 @@ import { ComponentChildren } from "preact"
 import { htmlToJsx } from "../util/jsx"
 import { Cartoes, exportada, maisRecentesPrimeiro } from "./ListaDeCards"
 
-// Corpo das páginas de pasta (/artigos/, /ideias/, /clube/, /temas/...): o texto do index.md
+// Corpo das páginas de pasta (/posts/, /radar/, /leituras/...): o texto do index.md
 // seguido de cards com as notas exportadas da pasta. Substitui o FolderContent do Quartz.
 export default (() => {
   const PaginaDePasta: QuartzComponent = ({

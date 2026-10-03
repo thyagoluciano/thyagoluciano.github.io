@@ -37,25 +37,25 @@ def test_vault_inexistente(amb, tmp_path):
 
 
 def test_arquivo_do_icloud_nao_baixado_aborta(amb, monkeypatch):
-    alvo = amb.vault / "20-Ideias" / "Ideia - Contexto importa.md"
+    alvo = amb.vault / "50-Conteudo/Site/Site - Contexto importa.md"
     original = exportar._esta_offline
     monkeypatch.setattr(exportar, "_esta_offline", lambda p: p == alvo or original(p))
     chamadas = []
     monkeypatch.setattr(exportar, "_baixar", lambda p: chamadas.append(p))
     with pytest.raises(exportar.VaultIndisponivel) as e:
         amb.exportar()
-    assert e.value.arquivos == ["20-Ideias/Ideia - Contexto importa.md"]
+    assert e.value.arquivos == ["50-Conteudo/Site/Site - Contexto importa.md"]
     assert len(chamadas) == exportar.TENTATIVAS_DOWNLOAD
     assert amb.gerados() == set() and not amb.manifesto.exists()
 
 
 def test_download_que_funciona_na_segunda_tentativa(amb, monkeypatch):
-    alvo = amb.vault / "20-Ideias" / "Ideia - Contexto importa.md"
+    alvo = amb.vault / "50-Conteudo/Site/Site - Contexto importa.md"
     estado = {"baixou": False}
     original = exportar._esta_offline
     monkeypatch.setattr(exportar, "_esta_offline", lambda p: (p == alvo and not estado["baixou"]) or original(p))
     monkeypatch.setattr(exportar, "_baixar", lambda p: estado.update(baixou=True))
-    assert "ideias/contexto-importa.md" in {n["caminho"] for n in amb.exportar().novas}
+    assert "posts/contexto-importa.md" in {n["caminho"] for n in amb.exportar().novas}
 
 
 def test_edeadlk_tambem_e_tratado(tmp_path, monkeypatch):
@@ -93,8 +93,8 @@ def test_cli_json_e_codigos_de_saida(amb):
     base = ["--vault", str(amb.vault), "--content", str(amb.content), "--manifesto", str(amb.manifesto), "--hoje", "2026-09-28"]
     r = cli(*base, "--simular", "--json")
     dados = json.loads(r.stdout)
-    assert r.returncode == 0 and len(dados["novas"]) == 6 and len(dados["erros"]) == 9
-    assert dados["novas"][0]["url"].startswith("https://thyagoluciano.com.br/")
+    assert r.returncode == 0 and len(dados["novas"]) == 6 and len(dados["erros"]) == 11
+    assert dados["novas"][0]["url"].startswith("https://thyagoluciano.github.io/")
     assert dados["auditoria"]["ok"] is True
     assert cli(*base, "--estrito").returncode == 1
     r = cli("--vault", str(amb.vault / "nada"), "--content", str(amb.content))
@@ -102,13 +102,22 @@ def test_cli_json_e_codigos_de_saida(amb):
 
 
 def test_cli_sem_vault_configurado(monkeypatch, amb):
-    env_limpo = {"PATH": "/usr/bin:/bin"}
-    r = subprocess.run([sys.executable, str(TOOLS / "exportar.py")], capture_output=True, text=True, env=env_limpo)
-    assert r.returncode == 2 and "Vault não configurado" in r.stderr
+    cfg = TOOLS / "config.toml"
+    bak = TOOLS / "config.toml.bak"
+    tinha_cfg = cfg.exists()
+    if tinha_cfg:
+        cfg.rename(bak)
+    try:
+        env_limpo = {"PATH": "/usr/bin:/bin"}
+        r = subprocess.run([sys.executable, str(TOOLS / "exportar.py")], capture_output=True, text=True, env=env_limpo)
+        assert r.returncode == 2 and "Vault não configurado" in r.stderr
+    finally:
+        if tinha_cfg and bak.exists():
+            bak.rename(cfg)
 
 
 def test_resumo_em_texto(amb):
     base = ["--vault", str(amb.vault), "--content", str(amb.content), "--manifesto", str(amb.manifesto), "--hoje", "2026-09-28"]
     r = cli(*base, "--simular")
-    assert "SIMULAÇÃO" in r.stdout and "6 novas" in r.stdout and "9 erros" in r.stdout
+    assert "SIMULAÇÃO" in r.stdout and "6 novas" in r.stdout and "11 erros" in r.stdout
     assert "Auditoria de privacidade: sem ocorrências" in r.stdout

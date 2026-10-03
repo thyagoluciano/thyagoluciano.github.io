@@ -13,10 +13,9 @@ interface Options {
 // [texto, ícone, slug de destino]
 const ITENS: [string, string, string][] = [
   ["Início", "casa", "index"],
-  ["Artigos", "artigos", "artigos/index"],
-  ["Ideias", "ideias", "ideias/index"],
-  ["Clube", "clube", "clube/index"],
-  ["Temas", "temas", "temas/index"],
+  ["Posts", "posts", "posts/index"],
+  ["Radar", "radar", "radar/index"],
+  ["Leituras", "leituras", "leituras/index"],
   ["Tags", "tags", "tags/index"],
   ["Arquivo", "arquivo", "arquivo"],
   ["Sobre", "sobre", "sobre"],
