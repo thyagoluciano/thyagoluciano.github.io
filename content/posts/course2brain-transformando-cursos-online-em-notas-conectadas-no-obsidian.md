@@ -1,6 +1,6 @@
 ---
-title: 'Transformando cursos online em notas conectadas no Obsidian'
-description: Como estruturar aulas em markdown, gerar sínteses técnicas com IA (inclusive com modelos gratuitos via OpenRouter) e criar conexões semânticas automáticas no grafo do Obsidian.
+title: Transformando cursos online em notas conectadas no Obsidian
+description: Como estruturar aulas em markdown, gerar sínteses técnicas com IA,e criar conexões semânticas automáticas no grafo do Obsidian.
 date: '2026-09-30'
 published: '2026-09-30'
 modified: '2026-10-03'
@@ -16,7 +16,7 @@ tipo: post
 capa: assets/7162e671-course2brain-linkedin-cover.jpg
 ---
 
-Como estruturar aulas em markdown, gerar sínteses técnicas com IA, inclusive com modelos gratuitos via OpenRouter, e criar conexões semânticas automáticas no grafo de conhecimento.
+Como estruturar aulas em markdown, gerar sínteses técnicas com IA, e criar conexões semânticas automáticas no grafo de conhecimento.
 
 ---
 
