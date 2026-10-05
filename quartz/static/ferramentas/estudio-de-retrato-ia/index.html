@@ -1,0 +1,526 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Estúdio de Retrato IA | Thyago Luciano</title>
+<meta name="description" content="Monte prompts para gerar fotos de perfil com IA escolhendo rede, enquadramento, pose, luz, roupa e fundo.">
+<link rel="canonical" href="https://thyagoluciano.com.br/ferramentas/estudio-de-retrato-ia">
+<meta name="robots" content="noindex">
+<style>:root{color-scheme:light dark}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<style>
+@font-face{font-family:"Inter";font-style:normal;font-weight:100 900;font-display:swap;src:url(../../fonts/inter-latin-wght-normal.woff2) format("woff2")}
+@font-face{font-family:"JetBrains Mono";font-style:normal;font-weight:100 800;font-display:swap;src:url(../../fonts/jetbrains-mono-latin-wght-normal.woff2) format("woff2")}
+</style>
+</head>
+<body>
+<style>
+/* Layout: estúdio — painel de controles à esquerda, "visor" com recorte circular + prompt à direita; biblioteca e guia abaixo */
+:root{
+  --bg:#EEF0F3; --surface:#FFFFFF; --line:#D5D9E0; --fg:#1B1F27; --muted:#5D6573;
+  --accent:#2F5BD3; --accent-ink:#FFFFFF; --soft:#E3E8F4; --code:#F6F7F9;
+  --f-display:"Inter", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Inter", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12151B; --surface:#1A1E26; --line:#2C323D; --fg:#E7EAF0; --muted:#9AA3B2;
+  --accent:#7C9BF0; --accent-ink:#0E1220; --soft:#222A3B; --code:#151920; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12151B; --surface:#1A1E26; --line:#2C323D; --fg:#E7EAF0; --muted:#9AA3B2;
+  --accent:#7C9BF0; --accent-ink:#0E1220; --soft:#222A3B; --code:#151920; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.55}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:20px;padding-block:28px 64px;display:flex;flex-direction:column;gap:40px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(28px,4vw,40px);font-weight:700;letter-spacing:-.01em}
+h2{font-size:24px;font-weight:700}
+h3{font-size:16px;font-weight:600}
+p{margin:0}
+.lede{color:var(--muted);max-width:64ch;margin-top:8px}
+.eyebrow{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+header{display:flex;flex-direction:column;gap:4px}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-top:16px}
+nav.tabs a{font-size:13.5px;color:var(--fg);text-decoration:none;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:var(--surface)}
+nav.tabs a:hover{border-color:var(--accent)}
+
+/* Gerador */
+.studio{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:24px;align-items:start}
+@media (max-width:900px){.studio{grid-template-columns:1fr}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:18px;min-width:0}
+fieldset{border:0;padding:0;margin:0;display:flex;flex-direction:column;gap:8px;min-width:0}
+legend{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:0;margin-bottom:8px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:13.5px;padding:6px 11px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--fg);cursor:pointer}
+.chip:hover{border-color:var(--accent)}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.chip:focus-visible,.btn:focus-visible,.sw:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
+.sw{display:flex;flex-direction:column;gap:4px;align-items:flex-start;padding:6px;border-radius:10px;border:1px solid var(--line);background:transparent;cursor:pointer;color:var(--fg);font:inherit;font-size:12px;text-align:left}
+.sw span.c{width:100%;height:30px;border-radius:6px;border:1px solid rgba(127,127,127,.25)}
+.sw[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.sw small{font-family:var(--f-mono);color:var(--muted);font-size:10.5px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.row label{font-size:13px;color:var(--muted);display:flex;gap:6px;align-items:center}
+input[type=text],select{font:inherit;font-size:14px;padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--fg);min-width:0}
+input[type=color]{width:42px;height:34px;padding:2px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
+
+.viewer{display:flex;flex-direction:column;gap:16px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px);min-width:0}
+@media (max-width:900px){.viewer{position:static}}
+.finder{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.finder svg{width:150px;height:150px;flex:none;max-width:100%}
+.specs{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:13px;min-width:0;flex:1}
+.specs dt{color:var(--muted)}
+.specs dd{margin:0;font-variant-numeric:tabular-nums}
+.out{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;min-width:0}
+.out-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+pre.prompt{margin:0;padding:16px;font-family:var(--f-mono);font-size:12.8px;line-height:1.6;white-space:pre-wrap;word-break:break-word;background:var(--code);max-height:460px;overflow:auto}
+.btn{font:inherit;font-size:13.5px;font-weight:600;padding:8px 14px;border-radius:8px;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--accent)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{font:inherit;font-size:12.5px;padding:5px 10px;border:0;background:transparent;color:var(--muted);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--soft);color:var(--fg);font-weight:600}
+.note{font-size:13px;color:var(--muted)}
+
+/* Biblioteca */
+.section-head{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.lib{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.card .top{display:flex;gap:12px;align-items:center}
+.dot{width:38px;height:38px;border-radius:50%;flex:none;border:1px solid rgba(127,127,127,.3)}
+.tag{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.card p{font-size:13.5px;color:var(--muted);flex:1}
+.card .actions{display:flex;gap:8px;flex-wrap:wrap}
+.card .btn{font-size:12.5px;padding:6px 11px}
+
+.refine{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:10px}
+.ref{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start;justify-content:space-between;min-width:0}
+.ref div{min-width:0}
+.ref b{font-size:13.5px;display:block}
+.ref code{font-family:var(--f-mono);font-size:12px;color:var(--muted);display:block;margin-top:4px;word-break:break-word}
+
+/* Guia */
+.guide{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.box ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:14px}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums;vertical-align:top}
+th{font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.sources a{color:var(--accent)}
+.sources li{font-size:13.5px}
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 20px);transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:9px 16px;border-radius:999px;font-size:13.5px;opacity:0;pointer-events:none;transition:opacity .2s}
+.toast.on{opacity:1}
+@media (prefers-reduced-motion:reduce){.toast{transition:none}}
+</style>
+
+<div class="wrap">
+<p style="margin:0"><a href="/ferramentas/estudio-de-retrato-ia" style="color:var(--accent);font-size:13.5px">&larr; Voltar ao site</a></p>
+  <header>
+    <span class="eyebrow">Coletânea de prompts · fotos de perfil</span>
+    <h1>Estúdio de Retrato IA</h1>
+    <p class="lede">Monte um prompt de foto de perfil escolhendo rede, enquadramento, pose, luz, roupa e a cor do fundo. Funciona com ChatGPT, Gemini (Nano Banana) e Midjourney. Use sempre uma selfie nítida como referência para manter seu rosto.</p>
+    <nav class="tabs" aria-label="Seções">
+      <a href="#gerador">Gerador</a><a href="#biblioteca">Biblioteca pronta</a><a href="#ajustes">Prompts de ajuste</a><a href="#guia">Guia e tamanhos</a>
+    </nav>
+  </header>
+
+  <section id="gerador" class="studio">
+    <div class="panel">
+      <fieldset><legend>Rede social</legend><div class="chips" id="f-platform"></div></fieldset>
+      <fieldset><legend>Ferramenta</legend><div class="chips" id="f-tool"></div></fieldset>
+      <fieldset><legend>Enquadramento</legend><div class="chips" id="f-framing"></div></fieldset>
+      <fieldset><legend>Pose</legend><div class="chips" id="f-pose"></div></fieldset>
+      <fieldset><legend>Expressão</legend><div class="chips" id="f-expr"></div></fieldset>
+      <fieldset><legend>Iluminação</legend><div class="chips" id="f-light"></div></fieldset>
+      <fieldset><legend>Roupa</legend><div class="chips" id="f-wardrobe"></div></fieldset>
+      <fieldset>
+        <legend>Fundo neutro (papel de estúdio)</legend>
+        <div class="swatches" id="f-bg"></div>
+        <div class="row">
+          <label for="customColor">Cor própria <input type="color" id="customColor" value="#7A8B99"></label>
+          <input type="text" id="customName" placeholder="Nome da cor (ex.: azul petróleo)" aria-label="Nome da cor própria" style="flex:1">
+        </div>
+        <div class="row">
+          <label for="bgStyle">Acabamento</label>
+          <select id="bgStyle">
+            <option value="solid">Chapado, uniforme</option>
+            <option value="gradient" selected>Gradiente sutil (centro mais claro)</option>
+            <option value="vignette">Vinheta suave nas bordas</option>
+          </select>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Referência</legend>
+        <div class="chips" id="f-ref"></div>
+        <input type="text" id="subject" placeholder="Se não usar foto: descreva a pessoa (idade, cabelo, barba, óculos…)" aria-label="Descrição da pessoa" hidden>
+      </fieldset>
+    </div>
+
+    <div class="viewer">
+      <div class="finder">
+        <svg viewBox="0 0 200 200" role="img" aria-label="Prévia do recorte circular com a cor do fundo">
+          <defs>
+            <radialGradient id="g" cx="50%" cy="42%" r="65%"><stop id="g0" offset="0%"/><stop id="g1" offset="100%"/></radialGradient>
+            <clipPath id="circ"><circle cx="100" cy="100" r="98"/></clipPath>
+          </defs>
+          <g clip-path="url(#circ)">
+            <rect width="200" height="200" fill="url(#g)"/>
+            <g id="sil" fill="#5A606A" fill-opacity=".85">
+              <ellipse cx="100" cy="225" rx="95" ry="70"/>
+              <rect x="86" y="120" width="28" height="40" rx="10"/>
+              <ellipse cx="100" cy="95" rx="34" ry="42"/>
+            </g>
+          </g>
+          <circle cx="100" cy="100" r="98" fill="none" stroke="#888" stroke-opacity=".5" stroke-width="1.5"/>
+          <line x1="20" y1="72" x2="180" y2="72" stroke="#fff" stroke-opacity=".35" stroke-dasharray="3 4"/>
+        </svg>
+        <dl class="specs" id="specs"></dl>
+      </div>
+      <div class="out">
+        <div class="out-head">
+          <div class="seg" role="group" aria-label="Idioma do prompt">
+            <button type="button" data-lang="en" aria-pressed="true">Inglês</button>
+            <button type="button" data-lang="pt" aria-pressed="false">Português</button>
+          </div>
+          <div class="row">
+            <button type="button" class="btn ghost" id="randomize">Variar pose</button>
+            <button type="button" class="btn" id="copyMain">Copiar prompt</button>
+          </div>
+        </div>
+        <pre class="prompt" id="prompt"></pre>
+      </div>
+      <p class="note">O inglês costuma dar resultados mais fiéis em termos técnicos de fotografia (lente, luz). Gere 3 a 4 versões e escolha a mais parecida com você.</p>
+    </div>
+  </section>
+
+  <section id="biblioteca">
+    <div class="section-head">
+      <span class="eyebrow">Biblioteca pronta</span>
+      <h2>14 estilos testados para redes</h2>
+      <p class="lede">Cada card carrega uma combinação no gerador. A cor de fundo escolhida acima é mantida; troque à vontade antes de copiar.</p>
+    </div>
+    <div class="lib" id="lib"></div>
+  </section>
+
+  <section id="ajustes">
+    <div class="section-head">
+      <span class="eyebrow">Iteração</span>
+      <h2>Prompts de ajuste</h2>
+      <p class="lede">Depois da primeira imagem, peça mudanças pontuais na mesma conversa. Mudar uma coisa por vez preserva melhor o rosto.</p>
+    </div>
+    <div class="refine" id="refine"></div>
+  </section>
+
+  <section id="guia">
+    <div class="section-head">
+      <span class="eyebrow">Guia</span>
+      <h2>O que faz uma foto de perfil funcionar</h2>
+    </div>
+    <div class="guide">
+      <div class="box">
+        <h3>A selfie de referência</h3>
+        <ul>
+          <li>Rosto de frente, olhos visíveis, luz de janela suave.</li>
+          <li>Sem óculos escuros, boné, filtros ou beleza do celular.</li>
+          <li>Câmera na altura dos olhos, a uns 60 cm (evita nariz distorcido).</li>
+          <li>Envie 2 ou 3 fotos de ângulos diferentes quando a ferramenta aceitar.</li>
+        </ul>
+      </div>
+      <div class="box">
+        <h3>A estrutura do prompt</h3>
+        <ul>
+          <li><b>Identidade:</b> "preserve exact facial structure and features".</li>
+          <li><b>Enquadramento e pose:</b> cabeça e ombros para avatares.</li>
+          <li><b>Roupa:</b> cores sólidas, sem estampas ou logos.</li>
+          <li><b>Fundo:</b> cor nomeada + código hex, sem textura.</li>
+          <li><b>Luz e câmera:</b> key light a 45°, 85 mm, f/2.8–f/4.</li>
+          <li><b>Realismo:</b> textura de pele com poros, sem aerógrafo.</li>
+        </ul>
+      </div>
+      <div class="box">
+        <h3>Erros comuns</h3>
+        <ul>
+          <li>Prompt genérico ("foto profissional") gera rosto de banco de imagens.</li>
+          <li>Pele lisa demais denuncia IA; peça "no beauty filter".</li>
+          <li>Enquadramento aberto vira um ponto no círculo de 40 px do feed.</li>
+          <li>Fundo da mesma cor da roupa apaga a silhueta.</li>
+          <li>Foto que não parece você em uma call quebra confiança.</li>
+        </ul>
+      </div>
+      <div class="box">
+        <h3>Tamanhos de avatar</h3>
+        <div class="tbl"><table>
+          <thead><tr><th>Rede</th><th>Envie</th><th>Exibição</th></tr></thead>
+          <tbody>
+            <tr><td>LinkedIn</td><td>1000×1000 (mín. 400)</td><td>Círculo</td></tr>
+            <tr><td>Instagram</td><td>1080×1080 (mín. 320)</td><td>Círculo</td></tr>
+            <tr><td>X / Threads</td><td>400×400 ou maior</td><td>Círculo</td></tr>
+            <tr><td>YouTube</td><td>800×800</td><td>Círculo</td></tr>
+            <tr><td>TikTok</td><td>720×720 (mín. 200)</td><td>Círculo</td></tr>
+            <tr><td>WhatsApp / Slack / GitHub</td><td>640×640 ou maior</td><td>Círculo ou quadrado arredondado</td></tr>
+          </tbody>
+        </table></div>
+        <p class="note">Rosto e ombros ocupando cerca de 60% do quadro, centralizados, para sobreviver ao recorte circular.</p>
+      </div>
+      <div class="box">
+        <h3>Combinações de fundo e roupa</h3>
+        <ul>
+          <li>Cinza claro: combina com quase tudo; o padrão mais seguro para LinkedIn.</li>
+          <li>Grafite ou preto: roupas claras ou coloridas, luz low-key.</li>
+          <li>Azul marinho: camisa branca ou clara; transmite seriedade.</li>
+          <li>Bege, sálvia, terracota: tons de pele quentes e perfis criativos.</li>
+          <li>Use a cor da sua marca pessoal em todas as redes para reconhecimento.</li>
+        </ul>
+      </div>
+      <div class="box sources">
+        <h3>Fontes consultadas</h3>
+        <ul>
+          <li><a href="https://www.techloy.com/best-prompts-for-ai-linkedin-headshots-in-2026-a-practical-guide/" target="_blank" rel="noopener">Techloy: prompts para headshots de LinkedIn (2026)</a></li>
+          <li><a href="https://lumalabs.ai/news/ai-headshot-prompts" target="_blank" rel="noopener">Luma Labs: AI headshot prompts</a></li>
+          <li><a href="https://www.atlascloud.ai/hi/blog/ai-updates/how-to-make-an-ai-headshot-look-more-realistic" target="_blank" rel="noopener">Atlas Cloud: realismo em headshots de IA</a></li>
+          <li><a href="https://www.digit.in/how-to/general/how-to-turn-your-selfie-into-professional-linkedin-profile-picture-with-google-gemini-ai-step-by-step-guide.html" target="_blank" rel="noopener">Digit: selfie para LinkedIn com Gemini</a></li>
+          <li><a href="https://www.eweek.com/news/chatgpt-portrait-prompts-professional-headshots/" target="_blank" rel="noopener">eWeek: 7 prompts de retrato no ChatGPT</a></li>
+          <li><a href="https://socialsizes.io/linkedin-profile-picture-size/" target="_blank" rel="noopener">SocialSizes: tamanho da foto do LinkedIn</a></li>
+          <li><a href="https://blog.hootsuite.com/social-media-image-sizes/" target="_blank" rel="noopener">Hootsuite: tamanhos de imagem por rede</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const O = {
+  platform:[
+    {id:"linkedin",l:"LinkedIn",en:"LinkedIn profile photo: polished, trustworthy and approachable; corporate-clean color grading",pt:"foto de perfil do LinkedIn: polida, confiável e acessível; tratamento de cor limpo e corporativo",size:"1000×1000"},
+    {id:"instagram",l:"Instagram",en:"Instagram profile photo: same person, a little more personality and warmth, editorial magazine feel, slightly warmer color grading",pt:"foto de perfil do Instagram: mesma pessoa, um pouco mais de personalidade e calor, estética editorial de revista, cor levemente mais quente",size:"1080×1080"},
+    {id:"x",l:"X / Threads",en:"X/Threads avatar: bold, high-contrast and instantly readable at very small sizes",pt:"avatar do X/Threads: marcante, com bom contraste e legível em tamanhos muito pequenos",size:"400×400+"},
+    {id:"youtube",l:"YouTube",en:"YouTube channel avatar: energetic and friendly creator look, vivid but natural colors",pt:"avatar de canal do YouTube: visual de criador, energético e simpático, cores vivas mas naturais",size:"800×800"},
+    {id:"tiktok",l:"TikTok",en:"TikTok avatar: expressive, youthful energy, punchy colors, readable at tiny sizes",pt:"avatar do TikTok: expressivo, energia jovem, cores marcantes, legível em tamanho minúsculo",size:"720×720"},
+    {id:"chat",l:"Slack / WhatsApp / GitHub",en:"workplace chat and developer profile avatar: friendly, simple, face clearly recognizable at 32 px",pt:"avatar de chat de trabalho e perfil de desenvolvedor: simpático, simples, rosto reconhecível a 32 px",size:"640×640"}
+  ],
+  tool:[
+    {id:"chatgpt",l:"ChatGPT"},{id:"gemini",l:"Gemini (Nano Banana)"},{id:"mj",l:"Midjourney / Flux"}
+  ],
+  framing:[
+    {id:"hs",l:"Cabeça e ombros",scale:1,en:"classic head-and-shoulders headshot, face and shoulders filling about 60% of the frame, subject centered with a little headroom",pt:"headshot clássico de cabeça e ombros, rosto e ombros ocupando cerca de 60% do quadro, centralizado e com um pouco de espaço acima da cabeça"},
+    {id:"tight",l:"Close fechado",scale:1.3,en:"tight close-up crop from the top of the head to just below the chin and collar, face filling about 70% of the frame",pt:"close fechado do topo da cabeça até logo abaixo do queixo e da gola, rosto ocupando cerca de 70% do quadro"},
+    {id:"chest",l:"Busto (peito para cima)",scale:.82,en:"chest-up portrait, framed from mid-chest to just above the head, subject centered",pt:"retrato do peito para cima, do meio do peito até logo acima da cabeça, centralizado"},
+    {id:"waist",l:"Meio corpo",scale:.6,en:"waist-up portrait with space around the subject, suitable for banners, websites and speaker bios",pt:"retrato da cintura para cima com espaço ao redor, bom para banner, site e bio de palestrante"}
+  ],
+  pose:[
+    {id:"front",l:"Frontal clássico",en:"shoulders and face squared to the camera, relaxed posture, head level",pt:"ombros e rosto de frente para a câmera, postura relaxada, cabeça nivelada"},
+    {id:"angle",l:"Ombros a 45°",en:"body turned about 45 degrees to the side, face turned back toward the camera, chin slightly forward and down",pt:"corpo virado cerca de 45 graus, rosto voltado para a câmera, queixo levemente para frente e para baixo"},
+    {id:"tilt",l:"Cabeça levemente inclinada",en:"slight, natural head tilt of about 5 degrees, shoulders relaxed and slightly angled",pt:"leve inclinação natural da cabeça, cerca de 5 graus, ombros relaxados e levemente de lado"},
+    {id:"lean",l:"Inclinado para frente",en:"leaning slightly toward the camera, engaged and attentive posture",pt:"levemente inclinado em direção à câmera, postura atenta e engajada"},
+    {id:"arms",l:"Braços cruzados",en:"arms loosely crossed, body angled 30 degrees, confident and open stance (relaxed, not defensive)",pt:"braços cruzados de forma leve, corpo a 30 graus, postura confiante e aberta (relaxada, não defensiva)"},
+    {id:"chin",l:"Mão no queixo",en:"one hand lightly near the chin in a thoughtful pose, fingers relaxed and natural",pt:"uma mão levemente próxima ao queixo em pose pensativa, dedos relaxados e naturais"},
+    {id:"away",l:"Olhar fora da câmera",en:"three-quarter profile, gaze directed slightly off-camera, candid editorial moment",pt:"perfil três quartos, olhar levemente fora da câmera, momento editorial espontâneo"},
+    {id:"over",l:"Por cima do ombro",en:"body turned away, looking back over the shoulder toward the camera",pt:"corpo de costas, olhando por cima do ombro para a câmera"}
+  ],
+  expr:[
+    {id:"soft",l:"Sorriso leve",en:"soft closed-mouth smile, warm and confident eyes",pt:"sorriso leve de boca fechada, olhar caloroso e confiante"},
+    {id:"open",l:"Sorriso aberto",en:"genuine open smile showing teeth, eyes slightly crinkled (Duchenne smile)",pt:"sorriso aberto e genuíno mostrando os dentes, olhos levemente apertados (sorriso de Duchenne)"},
+    {id:"serious",l:"Sério e confiante",en:"calm, confident neutral expression with a hint of warmth, relaxed jaw",pt:"expressão neutra, calma e confiante, com um toque de simpatia, mandíbula relaxada"},
+    {id:"laugh",l:"Riso espontâneo",en:"candid mid-laugh moment, natural and relaxed",pt:"momento espontâneo de riso, natural e relaxado"}
+  ],
+  light:[
+    {id:"key45",l:"Estúdio suave 45°",en:"soft key light from a large octabox at 45 degrees camera-left, gentle fill from the right, subtle hair light for separation, natural catchlights in both eyes",pt:"luz principal suave de octabox grande a 45 graus à esquerda, preenchimento suave pela direita, leve contraluz no cabelo para separar do fundo, reflexo natural nos dois olhos"},
+    {id:"window",l:"Luz de janela",en:"soft diffused north-facing window light from the side, natural gentle shadow fall-off",pt:"luz difusa de janela lateral, sombras suaves e naturais"},
+    {id:"butterfly",l:"Butterfly (beauty)",en:"butterfly lighting from a beauty dish slightly above the camera, reflector below the chin, even and flattering",pt:"luz butterfly com beauty dish logo acima da câmera, rebatedor abaixo do queixo, uniforme e favorável"},
+    {id:"high",l:"High-key claro",en:"bright high-key lighting, low contrast, airy and clean, almost shadowless",pt:"luz high-key clara, baixo contraste, leve e limpa, quase sem sombras"},
+    {id:"low",l:"Low-key dramático",en:"low-key Rembrandt lighting, single soft key light at 45 degrees, deeper shadows on one side of the face, rim light on the shoulders",pt:"luz low-key Rembrandt, uma luz suave a 45 graus, sombras mais fundas em um lado do rosto, recorte de luz nos ombros"}
+  ],
+  wardrobe:[
+    {id:"exec",l:"Executivo",en:"tailored navy or charcoal blazer over a crisp white shirt, no tie, neatly groomed hair",pt:"blazer azul-marinho ou grafite bem ajustado sobre camisa branca, sem gravata, cabelo arrumado"},
+    {id:"tech",l:"Tech / startup",en:"well-fitted dark blazer over a plain crew-neck t-shirt, modern and relaxed",pt:"blazer escuro bem ajustado sobre camiseta lisa gola redonda, moderno e descontraído"},
+    {id:"smart",l:"Smart casual",en:"solid-color knit sweater or open-collar button-down shirt, no patterns",pt:"suéter de tricô de cor sólida ou camisa social sem gravata, sem estampas"},
+    {id:"creative",l:"Criativo",en:"solid-color outfit in a tone that contrasts with the background, minimal accessories, no logos",pt:"roupa de cor sólida que contraste com o fundo, poucos acessórios, sem logos"},
+    {id:"health",l:"Saúde (jaleco)",en:"clean white lab coat over a solid-color top",pt:"jaleco branco limpo sobre blusa de cor sólida"},
+    {id:"keep",l:"Manter a da foto",en:"keep the exact clothing from the reference photo, only tidy wrinkles",pt:"manter exatamente a roupa da foto de referência, apenas alisar amassados"}
+  ],
+  ref:[
+    {id:"photo",l:"Com minha foto"},{id:"text",l:"Só descrição"}
+  ],
+  bg:[
+    {id:"lightgray",pt:"cinza claro",en:"light gray",hex:"#D9DCE0"},
+    {id:"midgray",pt:"cinza médio",en:"medium gray",hex:"#9EA3AA"},
+    {id:"graphite",pt:"grafite",en:"graphite gray",hex:"#4A4F57"},
+    {id:"offwhite",pt:"branco gelo",en:"off-white",hex:"#F2F2EF"},
+    {id:"black",pt:"preto",en:"deep black",hex:"#151515"},
+    {id:"navy",pt:"azul-marinho",en:"navy blue",hex:"#1F2A44"},
+    {id:"bluegray",pt:"azul acinzentado",en:"dusty blue-gray",hex:"#8A9BAE"},
+    {id:"sand",pt:"bege areia",en:"warm sand beige",hex:"#D8CBB8"},
+    {id:"sage",pt:"verde sálvia",en:"muted sage green",hex:"#A3B19B"},
+    {id:"terracotta",pt:"terracota suave",en:"soft terracotta",hex:"#C98B6E"},
+    {id:"burgundy",pt:"bordô",en:"deep burgundy",hex:"#5C2430"},
+    {id:"custom",pt:"personalizada",en:"custom",hex:null}
+  ]
+};
+
+const S = {platform:"linkedin",tool:"chatgpt",framing:"hs",pose:"angle",expr:"soft",light:"key45",wardrobe:"exec",ref:"photo",bg:"lightgray",lang:"en",extra:null};
+try{const saved=JSON.parse(localStorage.getItem("retratoState")||"null");if(saved)Object.assign(S,saved,{extra:null});}catch(e){}
+
+const $=id=>document.getElementById(id);
+const get=(k,id=S[k])=>O[k].find(o=>o.id===id);
+
+function chips(key){
+  const box=$("f-"+key); box.innerHTML="";
+  O[key].forEach(o=>{
+    const b=document.createElement("button");b.type="button";b.className="chip";b.textContent=o.l;
+    b.setAttribute("aria-pressed",S[key]===o.id);
+    b.onclick=()=>{S[key]=o.id;S.extra=null;renderAll();};
+    box.appendChild(b);
+  });
+}
+function swatches(){
+  const box=$("f-bg");box.innerHTML="";
+  O.bg.forEach(o=>{
+    const hex=o.hex||$("customColor").value;
+    const b=document.createElement("button");b.type="button";b.className="sw";
+    b.setAttribute("aria-pressed",S.bg===o.id);
+    b.innerHTML=`<span class="c" style="background:${hex}"></span>${o.id==="custom"?"Personalizada":cap(o.pt)}<small>${hex.toUpperCase()}</small>`;
+    b.onclick=()=>{S.bg=o.id;renderAll();};
+    box.appendChild(b);
+  });
+}
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+function bgInfo(){
+  const o=get("bg");
+  if(o.id==="custom"){const n=$("customName").value.trim()||"custom color";return{hex:$("customColor").value.toUpperCase(),en:n,pt:$("customName").value.trim()||"cor personalizada"};}
+  return{hex:o.hex,en:o.en,pt:o.pt};
+}
+function shade(hex,amt){
+  const n=parseInt(hex.slice(1),16);let r=n>>16,g=n>>8&255,b=n&255;
+  const f=v=>Math.max(0,Math.min(255,Math.round(v+(amt>0?(255-v)*amt:v*amt))));
+  return"#"+[f(r),f(g),f(b)].map(v=>v.toString(16).padStart(2,"0")).join("");
+}
+function lum(hex){const n=parseInt(hex.slice(1),16);return(0.299*(n>>16)+0.587*(n>>8&255)+0.114*(n&255))/255;}
+
+function buildPrompt(lang){
+  const L=lang, p=get("platform"), fr=get("framing"), po=get("pose"), ex=get("expr"), li=get("light"), wa=get("wardrobe"), bg=bgInfo(), tool=S.tool, style=$("bgStyle").value;
+  const subj=$("subject").value.trim();
+  const bgFinish={solid:{en:"perfectly even and uniform",pt:"totalmente uniforme e chapado"},gradient:{en:"with a subtle soft gradient, slightly lighter behind the head",pt:"com gradiente suave e sutil, um pouco mais claro atrás da cabeça"},vignette:{en:"with a gentle soft vignette toward the edges",pt:"com vinheta suave nas bordas"}}[style][L];
+  const X=S.extra?S.extra[L]:"";
+  if(L==="en"){
+    const lines=[];
+    if(S.ref==="photo") lines.push("Use the attached photo(s) as the only reference for the person's identity. Create a photorealistic professional profile photo of this exact same person. Preserve the exact facial structure, face shape, eye shape and color, nose, lips, skin tone, hairline, hair texture, and any distinctive marks. Do not beautify, slim, de-age or change ethnicity. The result must look like a real photo of them taken in a professional studio.");
+    else lines.push(`Create a photorealistic professional profile photo of ${subj||"[describe the person: approximate age, gender, hair, facial hair, glasses, skin tone]"}.`);
+    lines.push("",`Purpose: ${p.en}.`,`Framing: ${fr.en}.`,`Pose: ${po.en}.`,`Expression: ${ex.en}.`,`Wardrobe: ${wa.en}.`,
+      `Background: seamless solid ${bg.en} studio paper backdrop (${bg.hex}), ${bgFinish}, no texture, no props, no text, clear separation between subject and background.`,
+      `Lighting: ${li.en}.`,
+      "Camera: full-frame camera, 85mm portrait lens at f/2.8, eye level, tack-sharp focus on the eyes, background softly out of focus.",
+      "Realism: natural skin texture with visible pores and fine detail, natural facial asymmetry, no airbrushing, no plastic or waxy skin, true-to-life colors.");
+    if(X) lines.push(`Special instruction: ${X}`);
+    lines.push(`Output: square 1:1 image, high resolution (at least ${p.size} px), subject centered so it works in a circular crop.`,
+      "Avoid: distorted hands, extra fingers, cartoon or 3D look, heavy retouching, harsh shadows, busy background, logos, watermarks.");
+    if(tool==="gemini") lines.push("","Keep the face identical to the reference; change only lighting, clothing, background and pose.");
+    if(tool==="mj") return lines.filter(l=>!l.startsWith("Use the attached")).join(" ").replace(/\s+/g," ").trim()+" --ar 1:1 --style raw --v 7"+(S.ref==="photo"?"  [anexe sua foto como Omni/Character Reference]":"");
+    return lines.join("\n");
+  } else {
+    const lines=[];
+    if(S.ref==="photo") lines.push("Use a(s) foto(s) anexada(s) como única referência da identidade da pessoa. Crie uma foto de perfil profissional fotorrealista dessa mesma pessoa. Preserve exatamente a estrutura facial, formato do rosto, formato e cor dos olhos, nariz, lábios, tom de pele, linha do cabelo, textura do cabelo e marcas características. Não embeleze, não afine, não rejuvenesça e não altere a etnia. O resultado deve parecer uma foto real dela tirada em um estúdio profissional.");
+    else lines.push(`Crie uma foto de perfil profissional fotorrealista de ${subj||"[descreva a pessoa: idade aproximada, gênero, cabelo, barba, óculos, tom de pele]"}.`);
+    lines.push("",`Finalidade: ${p.pt}.`,`Enquadramento: ${fr.pt}.`,`Pose: ${po.pt}.`,`Expressão: ${ex.pt}.`,`Roupa: ${wa.pt}.`,
+      `Fundo: papel de estúdio infinito na cor ${bg.pt} (${bg.hex}), ${bgFinish}, sem textura, sem objetos, sem texto, com boa separação entre pessoa e fundo.`,
+      `Iluminação: ${li.pt}.`,
+      "Câmera: câmera full-frame, lente de retrato 85 mm em f/2.8, na altura dos olhos, foco nítido nos olhos, fundo levemente desfocado.",
+      "Realismo: textura natural da pele com poros visíveis, assimetria natural do rosto, sem aerógrafo, sem pele plástica ou de cera, cores fiéis.");
+    if(X) lines.push(`Instrução especial: ${X}`);
+    lines.push(`Saída: imagem quadrada 1:1, alta resolução (pelo menos ${p.size} px), pessoa centralizada para funcionar no recorte circular.`,
+      "Evite: mãos distorcidas, dedos extras, aparência de desenho ou 3D, retoque pesado, sombras duras, fundo poluído, logos, marcas d'água.");
+    if(tool==="gemini") lines.push("","Mantenha o rosto idêntico ao da referência; mude apenas luz, roupa, fundo e pose.");
+    if(tool==="mj") return lines.filter(l=>!l.startsWith("Use a(s)")).join(" ").replace(/\s+/g," ").trim()+" --ar 1:1 --style raw --v 7"+(S.ref==="photo"?"  [anexe sua foto como Omni/Character Reference]":"");
+    return lines.join("\n");
+  }
+}
+
+function renderPreview(){
+  const bg=bgInfo(), style=$("bgStyle").value;
+  const c0=style==="solid"?bg.hex:shade(bg.hex,.14), c1=style==="vignette"?shade(bg.hex,-.28):(style==="gradient"?shade(bg.hex,-.1):bg.hex);
+  $("g0").setAttribute("stop-color",c0);$("g1").setAttribute("stop-color",c1);
+  const sil=$("sil"); sil.setAttribute("fill",lum(bg.hex)>.55?"#4E545E":"#B9BEC6");
+  const s=get("framing").scale; sil.setAttribute("transform",`translate(100 110) scale(${s}) translate(-100 -110)`);
+  const p=get("platform");
+  $("specs").innerHTML=`<dt>Rede</dt><dd>${p.l}</dd><dt>Envie</dt><dd>${p.size} px, 1:1</dd><dt>Fundo</dt><dd>${cap(bg.pt)} · ${bg.hex}</dd><dt>Lente</dt><dd>85 mm · f/2.8</dd><dt>Enquadre</dt><dd>${get("framing").l}</dd>`;
+}
+function renderAll(){
+  ["platform","tool","framing","pose","expr","light","wardrobe","ref"].forEach(chips);
+  swatches();
+  $("subject").hidden=S.ref!=="text";
+  document.querySelectorAll(".seg button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.lang===S.lang));
+  $("prompt").textContent=buildPrompt(S.lang);
+  renderPreview();
+  try{const {extra,...rest}=S;localStorage.setItem("retratoState",JSON.stringify(rest));}catch(e){}
+}
+
+function toast(msg){const t=$("toast");t.textContent=msg;t.classList.add("on");clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("on"),1800);}
+function copy(text,el){
+  const done=()=>toast("Prompt copiado");
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(done).catch(()=>selectText(el));}
+  else selectText(el);
+}
+function selectText(el){if(!el)return;const r=document.createRange();r.selectNodeContents(el);const s=getSelection();s.removeAllRanges();s.addRange(r);toast("Selecionado: use Ctrl/Cmd+C");}
+
+$("copyMain").onclick=()=>copy($("prompt").textContent,$("prompt"));
+$("randomize").onclick=()=>{const opts=O.pose.filter(o=>o.id!==S.pose);S.pose=opts[Math.floor(Math.random()*opts.length)].id;renderAll();toast("Pose: "+get("pose").l);};
+document.querySelectorAll(".seg button").forEach(b=>b.onclick=()=>{S.lang=b.dataset.lang;renderAll();});
+["customColor","customName"].forEach(id=>$(id).addEventListener("input",()=>{S.bg="custom";renderAll();}));
+$("bgStyle").onchange=renderAll; $("subject").addEventListener("input",()=>{$("prompt").textContent=buildPrompt(S.lang);});
+
+/* Biblioteca */
+const LIB=[
+  {t:"LinkedIn",n:"Executivo clássico",d:"Finanças, direito, liderança. O padrão mais seguro.",s:{platform:"linkedin",framing:"hs",pose:"angle",expr:"soft",light:"key45",wardrobe:"exec",bg:"lightgray"}},
+  {t:"LinkedIn",n:"Tech e startups",d:"Blazer sobre camiseta, sorriso aberto, fundo azul acinzentado.",s:{platform:"linkedin",framing:"hs",pose:"tilt",expr:"open",light:"key45",wardrobe:"tech",bg:"bluegray"}},
+  {t:"LinkedIn",n:"Liderança séria",d:"Fundo marinho, luz low-key, olhar firme.",s:{platform:"linkedin",framing:"chest",pose:"front",expr:"serious",light:"low",wardrobe:"exec",bg:"navy"}},
+  {t:"LinkedIn",n:"Saúde",d:"Jaleco branco, luz alta e limpa, transmite cuidado.",s:{platform:"linkedin",framing:"hs",pose:"angle",expr:"open",light:"high",wardrobe:"health",bg:"offwhite"}},
+  {t:"LinkedIn",n:"Vendas e consultoria",d:"Inclinado para frente, sorriso genuíno, fundo areia.",s:{platform:"linkedin",framing:"hs",pose:"lean",expr:"open",light:"window",wardrobe:"smart",bg:"sand"}},
+  {t:"LinkedIn · banner",n:"Palestrante",d:"Meio corpo com braços cruzados para banner, site e bio de evento.",s:{platform:"linkedin",framing:"waist",pose:"arms",expr:"soft",light:"key45",wardrobe:"exec",bg:"graphite"}},
+  {t:"Instagram",n:"Editorial",d:"Olhar fora da câmera, luz de janela, fundo sálvia.",s:{platform:"instagram",framing:"chest",pose:"away",expr:"soft",light:"window",wardrobe:"creative",bg:"sage"}},
+  {t:"Instagram",n:"Lifestyle sorridente",d:"Riso espontâneo, tons quentes, fundo terracota.",s:{platform:"instagram",framing:"hs",pose:"tilt",expr:"laugh",light:"window",wardrobe:"smart",bg:"terracotta"}},
+  {t:"Instagram",n:"Dramático",d:"Fundo preto, luz Rembrandt, por cima do ombro.",s:{platform:"instagram",framing:"chest",pose:"over",expr:"serious",light:"low",wardrobe:"creative",bg:"black"}},
+  {t:"Instagram",n:"Preto e branco",d:"Retrato clássico monocromático, alto contraste.",s:{platform:"instagram",framing:"hs",pose:"chin",expr:"serious",light:"low",wardrobe:"smart",bg:"midgray"},x:{en:"Render in classic black and white with rich tonal range, deep blacks and soft highlights, fine film grain.",pt:"Gere em preto e branco clássico, com boa gama tonal, pretos profundos, altas luzes suaves e leve grão de filme."}},
+  {t:"X / Threads",n:"Close de alto contraste",d:"Close fechado legível até em 40 px.",s:{platform:"x",framing:"tight",pose:"front",expr:"soft",light:"butterfly",wardrobe:"smart",bg:"graphite"}},
+  {t:"YouTube / TikTok",n:"Criador de conteúdo",d:"Energia alta, sorriso aberto, fundo bordô.",s:{platform:"youtube",framing:"hs",pose:"lean",expr:"open",light:"butterfly",wardrobe:"creative",bg:"burgundy"}},
+  {t:"Retoque",n:"Só melhorar minha foto",d:"Mantém pose e roupa da sua foto; troca fundo e corrige luz.",s:{platform:"linkedin",framing:"hs",pose:"front",expr:"soft",light:"key45",wardrobe:"keep",bg:"lightgray"},x:{en:"Keep the original pose, expression and clothing exactly as in the reference photo. Only replace the background, balance the lighting and correct the colors. Do not regenerate the face.",pt:"Mantenha exatamente a pose, a expressão e a roupa da foto de referência. Apenas troque o fundo, equilibre a luz e corrija as cores. Não recrie o rosto."}},
+  {t:"Kit multirrede",n:"4 variações de uma vez",d:"Gera um conjunto coerente para usar em todas as redes.",s:{platform:"linkedin",framing:"hs",pose:"angle",expr:"soft",light:"key45",wardrobe:"tech",bg:"bluegray"},x:{en:"Generate 4 separate images of the same person, same outfit, same backdrop and lighting: (1) shoulders at 45° with soft smile, (2) frontal with open smile, (3) slight head tilt looking off-camera, (4) chest-up with arms crossed. Keep the face identical across all four.",pt:"Gere 4 imagens separadas da mesma pessoa, mesma roupa, mesmo fundo e luz: (1) ombros a 45° com sorriso leve, (2) frontal com sorriso aberto, (3) cabeça levemente inclinada olhando fora da câmera, (4) busto com braços cruzados. Mantenha o rosto idêntico nas quatro."}}
+];
+function renderLib(){
+  const box=$("lib");box.innerHTML="";
+  LIB.forEach((it,i)=>{
+    const hex=O.bg.find(b=>b.id===it.s.bg).hex;
+    const c=document.createElement("article");c.className="card";
+    c.innerHTML=`<div class="top"><span class="dot" style="background:radial-gradient(circle at 50% 40%, ${shade(hex,.15)}, ${shade(hex,-.12)})"></span><div><span class="tag">${it.t}</span><h3>${it.n}</h3></div></div><p>${it.d}</p><div class="actions"><button type="button" class="btn ghost" data-a="load">Abrir no gerador</button><button type="button" class="btn" data-a="copy">Copiar</button></div>`;
+    c.querySelector('[data-a="load"]').onclick=()=>{apply(it);location.hash="gerador";document.getElementById("gerador").scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});toast(it.n+" carregado");};
+    c.querySelector('[data-a="copy"]').onclick=()=>{apply(it);copy($("prompt").textContent,$("prompt"));};
+    box.appendChild(c);
+  });
+}
+function apply(it){Object.assign(S,it.s);S.extra=it.x||null;renderAll();}
+
+/* Ajustes */
+const REF=[
+  ["Trocar só a cor do fundo","Keep everything identical (face, pose, clothing, lighting). Only change the background to a seamless [color] studio backdrop."],
+  ["O rosto ficou diferente","The face no longer matches the reference. Regenerate keeping the exact facial features from the original photo; do not alter eyes, nose, jaw or skin tone."],
+  ["Pele artificial demais","Make the skin more realistic: visible pores, fine texture, subtle natural imperfections. Remove any airbrushed or plastic look."],
+  ["Sorriso mais natural","Keep everything the same, but make the smile softer and more natural, with relaxed eyes."],
+  ["Mudar para outra rede","Using the same person and lighting, create a version for Instagram: slightly warmer tones and a more relaxed pose."],
+  ["Ajustar para o círculo","Recompose so the face and shoulders fill about 60% of a square frame, centered, with even headroom, for a circular crop."],
+  ["Trocar a roupa","Keep the face and pose identical. Change the outfit to a [color] [garment], solid color, no logos."],
+  ["Mais separação do fundo","Add a subtle hair/rim light and slightly lighten the background behind the head so the subject separates clearly."]
+];
+function renderRef(){
+  const box=$("refine");
+  REF.forEach(([t,p])=>{
+    const d=document.createElement("div");d.className="ref";
+    d.innerHTML=`<div><b>${t}</b><code>${p}</code></div><button type="button" class="btn ghost" style="font-size:12.5px;padding:5px 10px">Copiar</button>`;
+    d.querySelector("button").onclick=()=>copy(p,d.querySelector("code"));
+    box.appendChild(d);
+  });
+}
+renderAll();renderLib();renderRef();
+</script>
+
+</body>
+</html>

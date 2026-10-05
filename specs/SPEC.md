@@ -91,11 +91,15 @@ content/
 │   └── index.md          # fixo: introdução da seção
 ├── radar/                # GERADO (projetos e ferramentas de outras pessoas)
 │   └── index.md          # fixo
+├── ferramentas/          # ESCRITO NO REPOSITÓRIO (ferramentas minhas, não vêm do vault)
+│   ├── index.md          # fixo: introdução da seção
+│   └── <ferramenta>.md   # página de apresentação; o HTML fica em quartz/static/ferramentas/<ferramenta>/index.html
 ├── leituras/             # GERADO (resenhas e encontros)
 │   └── index.md          # fixo + bloco "lendo agora" gerado (seção 6.8)
 └── assets/               # GERADO (imagens usadas)
 ```
 
+- `ferramentas/` não é gerada: o exportador não a toca. Cada ferramenta é um HTML único, sem backend e sem CDN (fontes de `quartz/static/fonts/`), servido em `/static/ferramentas/<ferramenta>/` com `noindex`; a página de apresentação em `content/ferramentas/` é a que fica indexada.
 - O exportador **só escreve** em `posts/`, `radar/`, `leituras/` e `assets/`, e nunca apaga ou sobrescreve arquivos `index.md` dessas pastas.
 - Arquivos gerados levam no frontmatter `gerado: true`. O exportador só remove arquivos com essa marca.
 

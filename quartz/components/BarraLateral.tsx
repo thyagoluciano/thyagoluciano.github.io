@@ -16,6 +16,7 @@ const ITENS: [string, string, string][] = [
   ["Posts", "posts", "posts/index"],
   ["Radar", "radar", "radar/index"],
   ["Leituras", "leituras", "leituras/index"],
+  ["Ferramentas", "ferramentas", "ferramentas/index"],
   ["Tags", "tags", "tags/index"],
   ["Arquivo", "arquivo", "arquivo"],
   ["Sobre", "sobre", "sobre"],

@@ -14,8 +14,14 @@ export default (() => {
     cfg,
   }: QuartzComponentProps) => {
     const pasta = fileData.slug!.replace(/\/?index$/, "")
+    // Ferramentas são escritas no repositório (sem `gerado`), então entram na lista pela pasta
+    const escritaNoRepositorio = pasta === "ferramentas"
     const paginas = allFiles
-      .filter((f) => exportada(f) && f.slug!.startsWith(`${pasta}/`))
+      .filter(
+        (f) =>
+          f.slug!.startsWith(`${pasta}/`) &&
+          (exportada(f) || (escritaNoRepositorio && f.slug !== "ferramentas/index")),
+      )
       .sort(maisRecentesPrimeiro(cfg))
     const semTexto = (tree as Root).children.length === 0
     const conteudo = (
