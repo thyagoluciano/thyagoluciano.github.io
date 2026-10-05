@@ -279,6 +279,7 @@ O Substack guarda a lista de assinantes e faz o envio. Não há integração aut
 - `robots.txt` permitindo tudo e apontando o sitemap.
 - `robots.txt` fica em `content/robots.txt` (o Quartz copia para a raiz) e libera também os robôs de buscadores com IA.
 - Dados estruturados em JSON-LD, gerados em `quartz/components/dadosEstruturados.ts` e inseridos pelo `Cabeca.tsx`: home com `WebSite` + `Person`; posts com `BlogPosting` (resenhas e encontros com `Article`); ferramentas com `SoftwareApplication`, usando os campos opcionais `categoria` (valor do schema.org) e `plataformas` do frontmatter. Autor e site vão embutidos em cada página.
+- A home tem um `<h1>` só para leitores de tela e buscadores (`TituloDaHome.tsx`, texto do campo `h1` do frontmatter); as demais páginas usam o título do artigo.
 - Página 404 em português.
 
 ## 11. Páginas fixas (rascunho inicial, textos finais meus)

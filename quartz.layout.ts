@@ -13,6 +13,7 @@ import AncoraConteudo from "./quartz/components/AncoraConteudo"
 import PainelDireito from "./quartz/components/PainelDireito"
 import MetaDoPost from "./quartz/components/MetaDoPost"
 import CapaDoPost from "./quartz/components/CapaDoPost"
+import TituloDaHome from "./quartz/components/TituloDaHome"
 import Compartilhar from "./quartz/components/Compartilhar"
 import LeiaTambem from "./quartz/components/LeiaTambem"
 import AnteriorProximo from "./quartz/components/AnteriorProximo"
@@ -112,6 +113,10 @@ export const defaultContentPageLayout: PageLayout = {
     Component.ConditionalRender({
       component: Component.ArticleTitle(),
       condition: (page) => slugDe(page) !== "index",
+    }),
+    Component.ConditionalRender({
+      component: TituloDaHome(),
+      condition: (page) => slugDe(page) === "index",
     }),
     Component.ConditionalRender({
       component: MetaDoPost(),
