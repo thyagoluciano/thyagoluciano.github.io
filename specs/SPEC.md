@@ -274,6 +274,7 @@ O Substack guarda a lista de assinantes e faz o envio. Não há integração aut
 ## 10. SEO e compartilhamento
 
 - `<html lang="pt-BR">`, `description` em todas as páginas (do campo `descricao`).
+- Título (`<title>`, `og:title`, `twitter:title`): o do frontmatter mais o sufixo do site; o campo opcional `tituloSeo` substitui os dois. A home usa `tituloSeo` para carregar os temas do site em vez de "Início".
 - Open Graph e Twitter Card: título, descrição, URL canônica, imagem (capa da nota; sem capa, a imagem padrão `quartz/static/og-padrao.png`, 1200×630, em PNG; o `CustomOgImages` foi descartado porque gera WebP, que o LinkedIn não exibe).
 - `sitemap.xml` e `index.xml` (RSS) gerados pelo `ContentIndex`.
 - `robots.txt` permitindo tudo e apontando o sitemap.

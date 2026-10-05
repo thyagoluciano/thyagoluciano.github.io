@@ -25,7 +25,9 @@ const fontFaces = (baseDir: string) =>
 export default (() => {
   const Cabeca: QuartzComponent = ({ cfg, fileData, externalResources }: QuartzComponentProps) => {
     const titleSuffix = cfg.pageTitleSuffix ?? ""
+    // `tituloSeo` (frontmatter) substitui o título e o sufixo no <title> e nos cartões sociais
     const title =
+      (fileData.frontmatter?.tituloSeo as string | undefined) ??
       (fileData.frontmatter?.title ?? i18n(cfg.locale).propertyDefaults.title) + titleSuffix
     const description =
       fileData.frontmatter?.socialDescription ??
