@@ -1,5 +1,5 @@
 import { i18n } from "../i18n"
-import { FullSlug, getFileExtension, joinSegments, pathToRoot, simplifySlug } from "../util/path"
+import { FullSlug, getFileExtension, joinSegments, simplifySlug } from "../util/path"
 import { CSSResourceToStyleElement, JSResourceToScriptElement } from "../util/resources"
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import { unescapeHTML } from "../util/escape"
@@ -40,8 +40,7 @@ export default (() => {
 
     const url = new URL(`https://${cfg.baseUrl ?? "example.com"}`)
     const path = url.pathname as FullSlug
-    const baseDir = fileData.slug === "404" ? path : pathToRoot(fileData.slug!)
-    const iconPath = joinSegments(baseDir, "static/icon.png")
+    const iconPath = joinSegments(path, "static/icon.png")
 
     // Url canônica da página (pastas terminam em "/", como no sitemap)
     const simples = fileData.slug === "404" ? "/" : simplifySlug(fileData.slug!)
@@ -74,19 +73,21 @@ export default (() => {
         {/* Fontes hospedadas no próprio site (quartz/static/fonts): sem requisições a terceiros */}
         <link
           rel="preload"
-          href={joinSegments(baseDir, "static/fonts/inter-latin-wght-normal.woff2")}
+          href={joinSegments(path, "static/fonts/inter-latin-wght-normal.woff2")}
           as="font"
           type="font/woff2"
           crossOrigin="anonymous"
+          spa-preserve
         />
         <link
           rel="preload"
-          href={joinSegments(baseDir, "static/fonts/source-serif-4-latin-wght-normal.woff2")}
+          href={joinSegments(path, "static/fonts/source-serif-4-latin-wght-normal.woff2")}
           as="font"
           type="font/woff2"
           crossOrigin="anonymous"
+          spa-preserve
         />
-        <style dangerouslySetInnerHTML={{ __html: fontFaces(baseDir) }} />
+        <style spa-preserve dangerouslySetInnerHTML={{ __html: fontFaces(path) }} />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
         <meta name="og:site_name" content={cfg.pageTitle}></meta>
@@ -135,7 +136,7 @@ export default (() => {
           </>
         )}
 
-        <link rel="icon" href={iconPath} />
+        <link rel="icon" href={iconPath} spa-preserve />
         {fileData.slug !== "404" && <link rel="canonical" href={socialUrl} />}
         <meta name="description" content={description} />
         <meta name="generator" content="Quartz" />
