@@ -99,7 +99,7 @@ content/
 └── assets/               # GERADO (imagens usadas)
 ```
 
-- `ferramentas/` não é gerada: o exportador não a toca. Cada ferramenta é um HTML único, sem backend e sem CDN (fontes de `quartz/static/fonts/`), servido em `/static/ferramentas/<ferramenta>/` com `noindex`; a página de apresentação em `content/ferramentas/` é a que fica indexada.
+- `ferramentas/` não é gerada: o exportador não a toca. Cada ferramenta é um HTML único, sem backend e sem CDN (fontes de `quartz/static/fonts/`), servido em `/static/ferramentas/<ferramenta>/` com `noindex`; a página de apresentação em `content/ferramentas/` é a que fica indexada. As páginas de ferramentas entram na página Tags e no Arquivo (rótulo "Ferramenta") por `publicada` em `ListaDeCards.tsx`; painéis, vitrines da home e "Leia também" continuam só com notas exportadas.
 - O exportador **só escreve** em `posts/`, `radar/`, `leituras/` e `assets/`, e nunca apaga ou sobrescreve arquivos `index.md` dessas pastas.
 - Arquivos gerados levam no frontmatter `gerado: true`. O exportador só remove arquivos com essa marca.
 

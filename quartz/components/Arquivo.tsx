@@ -2,7 +2,7 @@ import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } fro
 import { resolveRelative } from "../util/path"
 import { QuartzPluginData } from "../plugins/vfile"
 import { getDate } from "./Date"
-import { ROTULO_TIPO, exportada, maisRecentesPrimeiro } from "./ListaDeCards"
+import { ROTULO_TIPO, ferramentaPropria, maisRecentesPrimeiro, publicada } from "./ListaDeCards"
 
 const MESES = [
   "Janeiro",
@@ -19,11 +19,11 @@ const MESES = [
   "Dezembro",
 ]
 
-// Linha do tempo por ano e mês de tudo o que foi exportado (posts, itens do radar, resenhas e encontros).
+// Linha do tempo por ano e mês de tudo o que foi publicado (posts, itens do radar, resenhas, encontros e ferramentas).
 export default (() => {
   const Arquivo: QuartzComponent = ({ allFiles, fileData, cfg }: QuartzComponentProps) => {
     const paginas = allFiles
-      .filter((f) => exportada(f) && getDate(cfg, f))
+      .filter((f) => publicada(f) && getDate(cfg, f))
       .sort(maisRecentesPrimeiro(cfg))
     if (paginas.length === 0) {
       return <p class="cards-vazio">Nenhuma publicação ainda.</p>
@@ -54,7 +54,9 @@ export default (() => {
                         {pagina.frontmatter?.title}
                       </a>
                       <span class="arquivo-tipo">
-                        {ROTULO_TIPO[String(pagina.frontmatter?.tipo)]}
+                        {ferramentaPropria(pagina)
+                          ? "Ferramenta"
+                          : ROTULO_TIPO[String(pagina.frontmatter?.tipo)]}
                       </span>
                     </li>
                   ))}

@@ -3,12 +3,13 @@ import { FullSlug, getAllSegmentPrefixes, resolveRelative, simplifySlug } from "
 import { Root } from "hast"
 import { ComponentChildren } from "preact"
 import { htmlToJsx } from "../util/jsx"
-import { Cartoes, exportada, maisRecentesPrimeiro } from "./ListaDeCards"
+import { Cartoes, maisRecentesPrimeiro, publicada } from "./ListaDeCards"
 
 const plural = (n: number, singular: string, pluralTxt: string) =>
   `${n} ${n === 1 ? singular : pluralTxt}`
 
 // Corpo do TagPage: em /tags/ a lista de tags com contagem; em /tags/<tag>/ os cards das notas.
+// Inclui as notas exportadas e as páginas de ferramentas (ver `publicada`).
 export default (() => {
   const PaginaDeTag: QuartzComponent = ({
     tree,
@@ -21,7 +22,7 @@ export default (() => {
       throw new Error(`Component "PaginaDeTag" tried to render a non-tag page: ${slug}`)
     }
     const tag = simplifySlug(slug.slice("tags/".length) as FullSlug)
-    const notas = allFiles.filter(exportada)
+    const notas = allFiles.filter(publicada)
     const comTag = (t: string) =>
       notas.filter((f) => (f.frontmatter?.tags ?? []).flatMap(getAllSegmentPrefixes).includes(t))
     const semTexto = (tree as Root).children.length === 0

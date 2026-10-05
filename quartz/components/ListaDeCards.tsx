@@ -25,6 +25,13 @@ export const ROTULO_ESTADO: Record<string, string> = {
 /** Só notas geradas pelo exportador: páginas fixas nunca entram em cards, painéis ou arquivo. */
 export const exportada = (f: QuartzPluginData) => f.frontmatter?.gerado === true
 
+/** Páginas de ferramentas escritas no repositório (content/ferramentas/<ferramenta>.md, sem `gerado`). */
+export const ferramentaPropria = (f: QuartzPluginData) =>
+  f.slug!.startsWith("ferramentas/") && f.slug !== "ferramentas/index"
+
+/** Exportadas do vault mais as ferramentas escritas no repositório: o que Tags e Arquivo listam. */
+export const publicada = (f: QuartzPluginData) => exportada(f) || ferramentaPropria(f)
+
 /** Data de publicação decrescente; empate por título. */
 export const maisRecentesPrimeiro =
   (cfg: GlobalConfiguration) => (a: QuartzPluginData, b: QuartzPluginData) => {
