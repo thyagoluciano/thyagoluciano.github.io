@@ -1,6 +1,8 @@
 ---
 title: Course2Brain
 description: Extensão de Chrome e motor local que transformam aulas de cursos online em notas conectadas no Obsidian.
+categoria: EducationalApplication
+plataformas: Windows, macOS, Linux
 capa: static/ferramentas/capas/course2brain.jpg
 date: '2026-10-05'
 tags:

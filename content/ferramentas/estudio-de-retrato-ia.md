@@ -1,6 +1,8 @@
 ---
 title: Estúdio de Retrato IA
 description: Monte prompts para gerar fotos de perfil com IA escolhendo rede, enquadramento, pose, luz, roupa e fundo.
+categoria: MultimediaApplication
+plataformas: Web
 capa: static/ferramentas/capas/estudio-de-retrato-ia.jpg
 date: '2026-10-05'
 tags:

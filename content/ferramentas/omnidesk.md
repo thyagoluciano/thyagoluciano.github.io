@@ -1,6 +1,8 @@
 ---
 title: OmniDesk
 description: Sincroniza a área de transferência e envia arquivos entre seus computadores e o celular pela rede local, sem nuvem e sem conta.
+categoria: UtilitiesApplication
+plataformas: Linux, macOS, Windows, iOS, Android
 capa: static/ferramentas/capas/omnidesk.jpg
 date: '2026-10-05'
 tags:
