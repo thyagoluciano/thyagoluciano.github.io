@@ -276,6 +276,7 @@ O Substack guarda a lista de assinantes e faz o envio. Não há integração aut
 - `<html lang="pt-BR">`, `description` em todas as páginas (do campo `descricao`).
 - Título (`<title>`, `og:title`, `twitter:title`): o do frontmatter mais o sufixo do site; o campo opcional `tituloSeo` substitui os dois. A home usa `tituloSeo` para carregar os temas do site em vez de "Início".
 - Open Graph e Twitter Card: título, descrição, URL canônica, imagem (capa da nota; sem capa, a imagem padrão `quartz/static/og-padrao.png`, 1200×630, em PNG; o `CustomOgImages` foi descartado porque gera WebP, que o LinkedIn não exibe).
+- `og:locale` `pt_BR` em todas as páginas. Posts, resenhas, encontros e ferramentas usam `og:type` `article`, com `article:published_time`, `article:modified_time`, `article:author` (página Sobre) e `article:tag`; as demais páginas são `website`. Sem `twitter:site` enquanto não houver perfil no X.
 - `sitemap.xml` e `index.xml` (RSS) gerados pelo `ContentIndex`.
 - `robots.txt` permitindo tudo e apontando o sitemap.
 - `robots.txt` fica em `content/robots.txt` (o Quartz copia para a raiz) e libera também os robôs de buscadores com IA.

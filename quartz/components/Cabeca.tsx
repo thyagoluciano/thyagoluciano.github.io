@@ -4,6 +4,8 @@ import { CSSResourceToStyleElement, JSResourceToScriptElement } from "../util/re
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import { unescapeHTML } from "../util/escape"
 import { dadosEstruturados, serializar } from "./dadosEstruturados"
+import { getDate } from "./Date"
+import { dataDeAtualizacao, ferramentaPropria } from "./ListaDeCards"
 const LATIN =
   "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD"
 
@@ -54,6 +56,15 @@ export default (() => {
     const extensao = (getFileExtension(imagem) ?? ".png").replace(".", "").toLowerCase()
     const tipoImagem = `image/${extensao === "jpg" ? "jpeg" : extensao === "svg" ? "svg+xml" : extensao}`
 
+    // Posts, resenhas, encontros e ferramentas são "article" no Open Graph; o resto é "website"
+    const ehArtigo =
+      (fileData.frontmatter?.gerado === true &&
+        ["post", "resenha", "encontro"].includes(String(fileData.frontmatter?.tipo))) ||
+      ferramentaPropria(fileData)
+    const publicada = ehArtigo ? getDate(cfg, fileData) : undefined
+    const atualizada = ehArtigo ? dataDeAtualizacao(cfg, fileData) : undefined
+    const tags = ehArtigo && Array.isArray(fileData.frontmatter?.tags) ? fileData.frontmatter.tags : []
+
     const dados = dadosEstruturados({ cfg, fileData, url: socialUrl, imagem, descricao: description })
 
     return (
@@ -80,10 +91,25 @@ export default (() => {
 
         <meta name="og:site_name" content={cfg.pageTitle}></meta>
         <meta property="og:title" content={title} />
-        <meta
-          property="og:type"
-          content={fileData.frontmatter?.tipo === "post" ? "article" : "website"}
-        />
+        <meta property="og:type" content={ehArtigo ? "article" : "website"} />
+        <meta property="og:locale" content="pt_BR" />
+        {ehArtigo && (
+          <>
+            {publicada && (
+              <meta property="article:published_time" content={publicada.toISOString()} />
+            )}
+            {(atualizada ?? publicada) && (
+              <meta
+                property="article:modified_time"
+                content={(atualizada ?? publicada)!.toISOString()}
+              />
+            )}
+            <meta property="article:author" content={`https://${cfg.baseUrl}/sobre`} />
+            {tags.map((tag: string) => (
+              <meta property="article:tag" content={tag} />
+            ))}
+          </>
+        )}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={description} />
