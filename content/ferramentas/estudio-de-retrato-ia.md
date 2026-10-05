@@ -1,12 +1,15 @@
 ---
 title: Estúdio de Retrato IA
 description: Monte prompts para gerar fotos de perfil com IA escolhendo rede, enquadramento, pose, luz, roupa e fundo.
+capa: static/ferramentas/capas/estudio-de-retrato-ia.jpg
 date: '2026-10-05'
 tags:
 - ia
 - ferramentas
 publish: true
 ---
+
+<p><a class="external" data-router-ignore href="/static/ferramentas/estudio-de-retrato-ia/"><img src="/static/ferramentas/capas/estudio-de-retrato-ia.jpg" width="1200" height="630" alt="Estúdio de Retrato IA: gerador de prompts para fotos de perfil" style="height:auto" /></a></p>
 
 Criei o Estúdio de Retrato IA com o Claude Code quando precisei trocar minha foto de perfil do LinkedIn. Ele monta o prompt de uma foto de perfil a partir das opções que você escolhe, em inglês ou português, para usar no Nano Banana (Gemini), no ChatGPT, no Midjourney ou em outro gerador de imagem.
 
