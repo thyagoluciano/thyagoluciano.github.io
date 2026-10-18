@@ -15,6 +15,16 @@ pytestmark = pytest.mark.skipif(
 )
 
 
+def paginas_reais():
+    """Páginas fixas do repositório. Ficam de fora as notas geradas pelo exportador: o vault de exemplo
+    as substitui, e os posts reais mudariam as contagens (tags, cards, arquivo)."""
+    content = RAIZ / "content"
+    for arq in [*content.rglob("*.md"), content / "robots.txt"]:
+        if arq.suffix == ".md" and "\ngerado: true" in arq.read_text(encoding="utf-8"):
+            continue
+        yield arq
+
+
 def build(content, saida):
     r = subprocess.run(
         ["node", "quartz/bootstrap-cli.mjs", "build", "-d", str(content), "-o", str(saida)],
@@ -28,7 +38,7 @@ def build(content, saida):
 
 def test_nada_secreto_em_content_nem_em_public(amb, tmp_path):
     # páginas fixas reais do repositório + notas exportadas do vault de exemplo
-    for arq in [*RAIZ.joinpath("content").rglob("*.md"), RAIZ / "content" / "robots.txt"]:
+    for arq in paginas_reais():
         destino = amb.content / arq.relative_to(RAIZ / "content")
         if not destino.exists():
             destino.parent.mkdir(parents=True, exist_ok=True)
@@ -63,7 +73,7 @@ def test_nada_secreto_em_content_nem_em_public(amb, tmp_path):
 
 def test_layout_seo_e_desempenho(amb, tmp_path):
     """Regressões do M4: idioma, canonical, imagens de compartilhamento, newsletter, grafo, 404 e peso do JS."""
-    for arq in [*RAIZ.joinpath("content").rglob("*.md"), RAIZ / "content" / "robots.txt"]:
+    for arq in paginas_reais():
         destino = amb.content / arq.relative_to(RAIZ / "content")
         if not destino.exists():
             destino.parent.mkdir(parents=True, exist_ok=True)
@@ -89,7 +99,8 @@ def test_layout_seo_e_desempenho(amb, tmp_path):
     # 404 em português
     assert "Esta página é privada ou não existe." in ler("404.html")
     # blocos do layout
-    assert "Receba a newsletter" not in artigo and "Receba a newsletter" not in sobre  # bloco removido do site
+    assert "Receba a newsletter" in artigo  # convite no fim dos posts
+    assert "Receba a newsletter" not in radar and "Receba a newsletter" not in sobre and "Receba a newsletter" not in home
     assert 'href="https://thyagoluciano.substack.com/subscribe" aria-label="Substack" title="Substack" target="_blank"' in artigo  # ícone na barra lateral
     assert "Mencionado em" not in artigo and "Mencionado em" not in radar  # seção removida do site
     assert "Backlinks" not in artigo
@@ -113,8 +124,8 @@ def test_layout_seo_e_desempenho(amb, tmp_path):
     assert 'class="voltar-ao-topo"' in home
     assert (publico / "static" / "avatar.png").exists() and (publico / "arquivo.html").exists()
     assert "/index.xml" in home  # RSS na barra lateral
-    # home em vitrines (Posts, Leituras e Radar), sem o texto de apresentação nem o título "Início"
-    assert all(f'<h2>{v}</h2>' in home for v in ("Posts", "Leituras", "Radar")) and 'class="article-title"' not in home
+    # home em vitrines (Posts, Ferramentas, Radar e Leituras), sem o texto de apresentação nem o título "Início"
+    assert all(f'<h2>{v}</h2>' in home for v in ("Posts", "Ferramentas", "Radar", "Leituras")) and 'class="article-title"' not in home
     assert "Como uso IA no dia a dia" in home.split("<h2>Posts</h2>")[1]
     # orçamento de JS (RNF3): o grafo do Quartz (d3 + pixi) passava de 600 KB e derrubava o Lighthouse mobile
     assert 'getElementById("conteudo")' in (publico / "postscript.js").read_text(encoding="utf-8")  # foco após "pular"
@@ -126,7 +137,7 @@ def test_cards_listas_tags_e_arquivo(amb, tmp_path):
     """T2 (SPEC-TEMA-CHIRPY): cards na home, pastas e tags; arquivo por ano e mês."""
     import re
 
-    for arq in [*RAIZ.joinpath("content").rglob("*.md"), RAIZ / "content" / "robots.txt"]:
+    for arq in paginas_reais():
         destino = amb.content / arq.relative_to(RAIZ / "content")
         destino.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(arq, destino)  # sempre as páginas fixas reais (com os títulos ## das seções)
@@ -140,14 +151,16 @@ def test_cards_listas_tags_e_arquivo(amb, tmp_path):
         return re.findall(r'<li class="card[^"]*">.*?<h3><a class="internal" href="[^"]*">([^<]+)</a></h3>', html, re.S)
 
     home = ler("index.html")
-    posts_home, resto = home.split("<h2>Leituras</h2>")
-    leituras_home, radar_home = resto.split("<h2>Radar</h2>")
+    posts_home, resto = home.split("<h2>Ferramentas</h2>")
+    ferramentas_home, resto2 = resto.split("<h2>Radar</h2>")
+    radar_home, leituras_home = resto2.split("<h2>Leituras</h2>")
     assert cards(posts_home) == ["Como uso IA no dia a dia", "Contexto importa", "Agendado passado"]  # mais recente primeiro
-    assert sorted(cards(leituras_home)) == ["A Arte da Guerra", "Setembro 2026"]
+    assert sorted(cards(ferramentas_home)) == ["Course2Brain", "Estúdio de Retrato IA", "OmniDesk"]
     assert cards(radar_home) == ["Quartz"]
+    assert sorted(cards(leituras_home)) == ["A Arte da Guerra", "Setembro 2026"]
     assert posts_home.count('class="card-capa"') == 1  # só o artigo com capa mostra imagem
     assert 'class="card-tipo">Post</span>' in home and "1 min" in home
-    assert home.count("Ver todos") == 3 and 'href="./posts/"' in home
+    assert home.count("Ver todos") == 4 and 'href="./posts/"' in home
 
     assert cards(ler("posts/index.html")) == ["Como uso IA no dia a dia", "Contexto importa", "Agendado passado"]
     assert sorted(cards(ler("leituras/index.html"))) == ["A Arte da Guerra", "Setembro 2026"]  # resenha e encontro
@@ -166,10 +179,10 @@ def test_cards_listas_tags_e_arquivo(amb, tmp_path):
 
     # tags: contagem no índice e cards na página da tag
     indice = ler("tags/index.html")
-    assert re.search(r'>ia</a><span class="nuvem-contagem">2</span>', indice)
+    assert re.search(r'>ia</a><span class="nuvem-contagem">4</span>', indice)  # 2 notas do vault de exemplo + 2 ferramentas reais
     assert indice.index(">ia</a>") < indice.index(">contexto</a>")  # mais usadas primeiro
-    assert cards(ler("tags/ia.html")) == ["Como uso IA no dia a dia", "Contexto importa"]
-    assert "2 publicações" in ler("tags/ia.html") and "1 publicação<" in ler("tags/contexto.html")
+    assert sorted(cards(ler("tags/ia.html"))) == ["Como uso IA no dia a dia", "Contexto importa", "Course2Brain", "Estúdio de Retrato IA"]
+    assert "4 publicações" in ler("tags/ia.html") and "1 publicação<" in ler("tags/contexto.html")
 
     # arquivo: ano e mês em ordem decrescente, sem páginas fixas nem notas bloqueadas
     arquivo = ler("arquivo.html")
@@ -191,7 +204,7 @@ def test_painel_e_post_completo(amb, tmp_path):
     """T3 (SPEC-TEMA-CHIRPY): painel direito, metadados, capa, compartilhar, leia também, anterior/próximo, temas."""
     import re
 
-    for arq in [*RAIZ.joinpath("content").rglob("*.md"), RAIZ / "content" / "robots.txt"]:
+    for arq in paginas_reais():
         destino = amb.content / arq.relative_to(RAIZ / "content")
         destino.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(arq, destino)

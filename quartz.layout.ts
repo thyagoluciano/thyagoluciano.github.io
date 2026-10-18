@@ -17,6 +17,7 @@ import TituloDaHome from "./quartz/components/TituloDaHome"
 import Compartilhar from "./quartz/components/Compartilhar"
 import LeiaTambem from "./quartz/components/LeiaTambem"
 import AnteriorProximo from "./quartz/components/AnteriorProximo"
+import Newsletter from "./quartz/components/Newsletter"
 
 // Redes e contato. Endereço vazio = o link não aparece.
 const SUBSTACK_URL = "https://thyagoluciano.substack.com/subscribe" // vazio: o botão leva para /newsletter
@@ -88,6 +89,10 @@ export const sharedPageComponents: SharedLayout = {
     Component.ConditionalRender({
       component: Compartilhar(),
       condition: geradoPeloExportador,
+    }),
+    Component.ConditionalRender({
+      component: Newsletter({ substackUrl: SUBSTACK_URL }),
+      condition: (page) => tipoDe(page) === "post",
     }),
     Component.ConditionalRender({
       component: LeiaTambem(),

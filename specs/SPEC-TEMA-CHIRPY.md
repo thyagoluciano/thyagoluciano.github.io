@@ -75,7 +75,7 @@ Todos são arquivos novos, importados direto em `quartz.layout.ts` (sem editar o
 | `VoltarAoTopo.tsx` | shell | Botão que aparece após rolar 300 px. |
 | `Icone.tsx` | uso interno | Conjunto de ícones SVG (menu, casa, livro, lâmpada, mapa, tag, arquivo, usuário, e-mail, busca, calendário, relógio, pasta, redes, RSS, copiar). Sem dependências. |
 
-Componentes do M4 que continuam: `Cabeca` (head/SEO) e `Rodape`. `Newsletter` e `Grafo` ficam no repositório sem uso, e `MencionadoEm` e `NotasDoTema` foram removidos. Saem de uso ao fim do T4: `Cabecalho` (substituído pela barra lateral e superior) e `ArtigosRecentes` (substituído pelos cards da home). Os arquivos são removidos junto com o T4.
+Componentes do M4 que continuam: `Cabeca` (head/SEO) e `Rodape`. `Newsletter` volta a ser usada no fim dos posts (tipo `post`); `Grafo` fica no repositório sem uso, e `MencionadoEm` e `NotasDoTema` foram removidos. Saem de uso ao fim do T4: `Cabecalho` (substituído pela barra lateral e superior) e `ArtigosRecentes` (substituído pelos cards da home). Os arquivos são removidos junto com o T4.
 
 ## 5. Blocos compartilhados
 
@@ -116,7 +116,7 @@ Os blocos não aparecem quando não há itens.
 
 ### 6.2 Post (artigo, ideia, resenha, encontro)
 
-Ordem: breadcrumb (barra superior) → capa → título → metadados → texto → tags → compartilhar → leia também → anterior/próximo. Sem bloco de newsletter, sem "Mencionado em" e sem grafo.
+Ordem: breadcrumb (barra superior) → capa → título → metadados → texto → tags → compartilhar → newsletter (só nos posts, tipo `post`) → leia também → anterior/próximo. Sem "Mencionado em" e sem grafo.
 
 | Bloco | Regra |
 |---|---|
