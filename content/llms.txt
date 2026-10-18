@@ -1,0 +1,26 @@
+# Thyago Luciano
+
+> Desenvolvedor, explorando tecnologias e compartilhando conhecimento.
+
+Site pessoal com textos sobre inteligência artificial, engenharia de software e liderança, além de ferramentas, resenhas de livros e encontros do clube de leitura. Conteúdo em português do Brasil.
+
+## Posts
+
+- [Criei um jogo de puzzle com o Claude Code e publiquei no Google Play](https://thyagoluciano.com.br/posts/shihtzudoku-com-claude-code): É um puzzle de lógica para celular, feito com o Claude Code e já no Google Play: como trabalhei com a IA, o que deu errado e o que ainda não provei.
+- [Transformando cursos online em notas conectadas no Obsidian](https://thyagoluciano.com.br/posts/course2brain-transformando-cursos-online-em-notas-conectadas-no-obsidian): Como estruturar aulas em markdown, gerar sínteses técnicas com IA,e criar conexões semânticas automáticas no grafo do Obsidian.
+
+## Ferramentas
+
+- [OmniDesk](https://thyagoluciano.com.br/ferramentas/omnidesk): Sincroniza a área de transferência e envia arquivos entre seus computadores e o celular pela rede local, sem nuvem e sem conta.
+- [Estúdio de Retrato IA](https://thyagoluciano.com.br/ferramentas/estudio-de-retrato-ia): Monte prompts para gerar fotos de perfil com IA escolhendo rede, enquadramento, pose, luz, roupa e fundo.
+- [Course2Brain](https://thyagoluciano.com.br/ferramentas/course2brain): Extensão de Chrome e motor local que transformam aulas de cursos online em notas conectadas no Obsidian.
+
+## Páginas
+
+- [Sobre](https://thyagoluciano.com.br/sobre): Quem é Thyago Luciano, os temas que estuda e como entrar em contato.
+- [Newsletter](https://thyagoluciano.com.br/newsletter): Assine a newsletter de Thyago Luciano para receber uma seleção dos textos e ideias por e-mail.
+
+## Opcional
+
+- [Arquivo](https://thyagoluciano.com.br/arquivo): todas as publicações por ano e mês
+- [RSS](https://thyagoluciano.com.br/index.xml): feed das publicações mais recentes
