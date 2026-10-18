@@ -1,7 +1,7 @@
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import { FullSlug, resolveRelative } from "../util/path"
 import { classNames } from "../util/lang"
-import { Cartoes, CSS_CARDS, exportada, maisRecentesPrimeiro } from "./ListaDeCards"
+import { Cartoes, CSS_CARDS, maisRecentesPrimeiro, publicada } from "./ListaDeCards"
 
 interface Vitrine {
   titulo: string
@@ -17,11 +17,16 @@ interface Options {
 
 const PADRAO: Vitrine[] = [
   { titulo: "Posts", pasta: "posts", vazio: "Os primeiros posts chegam em breve." },
-  { titulo: "Leituras", pasta: "leituras", vazio: "As primeiras resenhas chegam em breve." },
+  {
+    titulo: "Ferramentas",
+    pasta: "ferramentas",
+    vazio: "As primeiras ferramentas chegam em breve.",
+  },
   { titulo: "Radar", pasta: "radar", vazio: "Os primeiros itens do radar chegam em breve." },
+  { titulo: "Leituras", pasta: "leituras", vazio: "As primeiras resenhas chegam em breve." },
 ]
 
-/** Página inicial: uma vitrine de cards por seção (Posts, Leituras e Radar). */
+/** Página inicial: uma vitrine de cards por seção (Posts, Ferramentas, Radar e Leituras). */
 export default ((opts?: Partial<Options>) => {
   const vitrines = opts?.vitrines ?? PADRAO
   const limite = opts?.limite ?? 3
@@ -37,7 +42,7 @@ export default ((opts?: Partial<Options>) => {
         const paginas = allFiles
           .filter(
             (f) =>
-              exportada(f) && f.slug!.startsWith(`${v.pasta}/`) && f.slug !== `${v.pasta}/index`,
+              publicada(f) && f.slug!.startsWith(`${v.pasta}/`) && f.slug !== `${v.pasta}/index`,
           )
           .sort(maisRecentesPrimeiro(cfg))
         return (
