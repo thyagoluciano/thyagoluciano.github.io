@@ -7,6 +7,7 @@ Site estático (Quartz v4) gerado a partir das notas públicas do vault Obsidian
 - Implemente um marco por vez (SPEC seção 13) e pare ao final de cada um para revisão.
 - **Privacidade acima de tudo:** nada sai do vault sem passar pelo exportador e pela auditoria. Nunca desative o filtro `ExplicitPublish` nem a auditoria para "fazer passar".
 - **O vault é somente leitura.** Durante o desenvolvimento, use `tools/tests/fixtures/vault/`. Só exporte do vault real quando eu pedir.
+- Vault: `~/Library/Mobile Documents/iCloud~md~obsidian/Documents/SecondBrain` (ou `SB_VAULT` / `tools/config.toml`). Uma nota vai ao site se tiver `publicar: true`, `slug`, `descricao` (até 160 caracteres) e, em `tipo: conteudo`, `canal: site` e `status: publicado` ou `agendado`. `npm run previa` e `npm run publicar` exportam do vault real. Regras completas: SPEC seção 6.
 - Personalize o Quartz só nos arquivos listados na SPEC seção 3, item 4, para manter `npx quartz update` funcionando.
 - Não faça `git push` nem mude configurações do GitHub ou DNS sem eu confirmar.
 - Interface, textos e mensagens em português do Brasil.
