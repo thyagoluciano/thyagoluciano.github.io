@@ -79,6 +79,21 @@ SF_DATALESS = 0x40000000  # arquivo do iCloud que ainda não foi baixado
 TENTATIVAS_DOWNLOAD = 3
 ESPERA_DOWNLOAD = 2.0  # segundos entre tentativas (os testes zeram)
 
+# llms.txt (https://llmstxt.org): índice do site para modelos de IA, gerado a cada exportação
+LLMS_NOME = "Thyago Luciano"
+LLMS_RESUMO = "Desenvolvedor, explorando tecnologias e compartilhando conhecimento."
+LLMS_DETALHES = (
+    "Site pessoal com textos sobre inteligência artificial, engenharia de software e liderança, "
+    "além de ferramentas, resenhas de livros e encontros do clube de leitura. Conteúdo em português do Brasil."
+)
+LLMS_SECOES = (  # (pasta em content/, título da seção)
+    ("posts", "Posts"),
+    ("ferramentas", "Ferramentas"),
+    ("radar", "Radar"),
+    ("leituras", "Leituras"),
+)
+LLMS_FIXAS = (("sobre", "Sobre"), ("newsletter", "Newsletter"))
+
 MARCA_INICIO = "<!-- gerado:lendo-agora -->"
 MARCA_FIM = "<!-- /gerado:lendo-agora -->"
 
@@ -886,6 +901,43 @@ class Resultado:
         }
 
 
+def _linha_llms(rel: str, fm: dict) -> str:
+    titulo = str(fm.get("title") or rel).strip()
+    descricao = " ".join(str(fm.get("description") or "").split())
+    linha = f"- [{titulo}](https://{DOMINIO}/{rel[:-3]})"
+    return f"{linha}: {descricao}" if descricao else linha
+
+
+def gerar_llms_txt(content: Path) -> str:
+    """Monta o llms.txt só com páginas publicadas (`publish: true`) e seus metadados públicos."""
+    paginas: dict[str, dict] = {}
+    for arq in sorted(content.rglob("*.md")):
+        fm = _ler_fm_arquivo(arq)
+        if fm and fm.get("publish") is True:
+            paginas[arq.relative_to(content).as_posix()] = fm
+
+    def recente(item: tuple[str, dict]):
+        fm = item[1]
+        return (para_data(fm.get("published") or fm.get("date")) or date.min, item[0])
+
+    linhas = [f"# {LLMS_NOME}", "", f"> {LLMS_RESUMO}", "", LLMS_DETALHES]
+    for pasta, titulo in LLMS_SECOES:
+        itens = [(r, fm) for r, fm in paginas.items() if r.startswith(f"{pasta}/") and r != f"{pasta}/index.md"]
+        if pasta == "leituras":
+            itens = [(r, fm) for r, fm in itens if not r.startswith("leituras/encontros/index")]
+        if not itens:
+            continue
+        linhas += ["", f"## {titulo}", ""]
+        linhas += [_linha_llms(r, fm) for r, fm in sorted(itens, key=recente, reverse=True)]
+    fixas = [(f"{slug}.md", rotulo) for slug, rotulo in LLMS_FIXAS if f"{slug}.md" in paginas]
+    if fixas:
+        linhas += ["", "## Páginas", ""]
+        linhas += [_linha_llms(r, paginas[r]) for r, _ in fixas]
+    linhas += ["", "## Opcional", "", f"- [Arquivo](https://{DOMINIO}/arquivo): todas as publicações por ano e mês",
+               f"- [RSS](https://{DOMINIO}/index.xml): feed das publicações mais recentes", ""]
+    return "\n".join(linhas)
+
+
 def _e_gerado(caminho: Path) -> bool:
     fm = _ler_fm_arquivo(caminho) if caminho.suffix == ".md" else None
     return bool(fm and fm.get("gerado") is True)
@@ -991,6 +1043,7 @@ def exportar(
             (staging / rel).write_bytes(dados)
 
         atualizar_lendo_agora(staging, elegiveis, res.avisos)
+        (staging / "llms.txt").write_text(gerar_llms_txt(staging), encoding="utf-8")
 
         for rel in removidos:
             res.removidas.append({"url": f"https://{DOMINIO}/{rel[:-3]}", "caminho": rel})
@@ -1006,6 +1059,7 @@ def exportar(
             return res
         if not simular:
             _sincronizar(staging, content)
+            shutil.copyfile(staging / "llms.txt", content / "llms.txt")
             escrever_manifesto(manifesto_path, manifesto)
             res.aplicado = True
     return res

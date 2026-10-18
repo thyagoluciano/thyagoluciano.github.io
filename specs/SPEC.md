@@ -279,6 +279,7 @@ O Substack guarda a lista de assinantes e faz o envio. Não há integração aut
 - `og:locale` `pt_BR` em todas as páginas. Posts, resenhas, encontros e ferramentas usam `og:type` `article`, com `article:published_time`, `article:modified_time`, `article:author` (página Sobre) e `article:tag`; as demais páginas são `website`. Sem `twitter:site` enquanto não houver perfil no X.
 - `sitemap.xml` e `index.xml` (RSS) gerados pelo `ContentIndex`.
 - `robots.txt` permitindo tudo e apontando o sitemap.
+- `llms.txt` na raiz do site, gerado pelo exportador a cada `previa` e `publicar`: título e resumo do site, e links com descrição para posts, ferramentas, radar, leituras, Sobre e Newsletter (só páginas com `publish: true`, mais recentes primeiro). Vai para `content/llms.txt` e o Quartz o copia para a raiz.
 - `robots.txt` fica em `content/robots.txt` (o Quartz copia para a raiz) e libera também os robôs de buscadores com IA.
 - Dados estruturados em JSON-LD, gerados em `quartz/components/dadosEstruturados.ts` e inseridos pelo `Cabeca.tsx`: home com `WebSite` + `Person`; posts com `BlogPosting` (resenhas e encontros com `Article`); ferramentas com `SoftwareApplication`, usando os campos opcionais `categoria` (valor do schema.org) e `plataformas` do frontmatter. Autor e site vão embutidos em cada página.
 - A home tem um `<h1>` só para leitores de tela e buscadores (`TituloDaHome.tsx`, texto do campo `h1` do frontmatter); as demais páginas usam o título do artigo.
