@@ -6,6 +6,12 @@
     "slug": "second-brain",
     "slugs_anteriores": []
   },
+  "50-Conteudo/Site/Site - Shih Tzudoku com Claude Code.md": {
+    "destino": "posts/shihtzudoku-com-claude-code.md",
+    "sha256": "909abdba949578d0aba84070774befa73f9aec3b551e502081816abc3281641f",
+    "slug": "shihtzudoku-com-claude-code",
+    "slugs_anteriores": []
+  },
   "50-Conteudo/Site/Site - course2brain.md": {
     "destino": "posts/course2brain-transformando-cursos-online-em-notas-conectadas-no-obsidian.md",
     "sha256": "0717f74e37e58e333f3292aa9878d38ed5a8003aa4f22e3171952a574b75c471",
