@@ -6,9 +6,16 @@
     "slug": "second-brain",
     "slugs_anteriores": []
   },
+  "50-Conteudo/Site/Site - Harness2.md": {
+    "destino": "radar/harness2.md",
+    "removida": "2026-11-04",
+    "sha256": "b1f9ad095b7b7362e8b00a29f463f1691780b9537ac1663c7cc8c47bfc5b790e",
+    "slug": "harness2",
+    "slugs_anteriores": []
+  },
   "50-Conteudo/Site/Site - Shih Tzudoku com Claude Code.md": {
     "destino": "posts/shihtzudoku-com-claude-code.md",
-    "sha256": "909abdba949578d0aba84070774befa73f9aec3b551e502081816abc3281641f",
+    "sha256": "23ed3b8c8f32380077dce3e2ba0fdb0e0c1e2924d48510d32206c5af565a9e68",
     "slug": "shihtzudoku-com-claude-code",
     "slugs_anteriores": []
   },

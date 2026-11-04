@@ -6,7 +6,7 @@ Site pessoal com textos sobre inteligência artificial, engenharia de software e
 
 ## Posts
 
-- [Criei um jogo de puzzle com o Claude Code e publiquei no Google Play](https://thyagoluciano.com.br/posts/shihtzudoku-com-claude-code): É um puzzle de lógica para celular, feito com o Claude Code e já no Google Play: como trabalhei com a IA, o que deu errado e o que ainda não provei.
+- [Criei um jogo de puzzle com o Claude Code e publiquei no Google Play e na App Store](https://thyagoluciano.com.br/posts/shihtzudoku-com-claude-code): Puzzle de lógica para celular, feito com o Claude Code e já no Google Play e na App Store: como trabalhei com a IA, o que deu errado e o que ainda não provei.
 - [Transformando cursos online em notas conectadas no Obsidian](https://thyagoluciano.com.br/posts/course2brain-transformando-cursos-online-em-notas-conectadas-no-obsidian): Como estruturar aulas em markdown, gerar sínteses técnicas com IA,e criar conexões semânticas automáticas no grafo do Obsidian.
 
 ## Ferramentas

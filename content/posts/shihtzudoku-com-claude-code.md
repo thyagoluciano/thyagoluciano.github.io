@@ -1,9 +1,9 @@
 ---
-title: Criei um jogo de puzzle com o Claude Code e publiquei no Google Play
-description: 'É um puzzle de lógica para celular, feito com o Claude Code e já no Google Play: como trabalhei com a IA, o que deu errado e o que ainda não provei.'
+title: Criei um jogo de puzzle com o Claude Code e publiquei no Google Play e na App Store
+description: 'Puzzle de lógica para celular, feito com o Claude Code e já no Google Play e na App Store: como trabalhei com a IA, o que deu errado e o que ainda não provei.'
 date: '2026-10-18'
 published: '2026-10-18'
-modified: '2026-10-18'
+modified: '2026-11-04'
 tags:
 - ia
 - engenharia-de-software
@@ -17,11 +17,11 @@ Em cerca de 50 horas de trabalho, entre 6 e 14 de outubro, construí um jogo de 
 
 Neste texto eu conto como funciona o jogo, como organizei o trabalho com a IA, o que já está pronto, o que deu errado no caminho, como foi publicar nas lojas e o que ainda falta. Não precisa entender de programação para acompanhar.
 
-Começo pelo estado atual: o jogo já está no [Google Play](https://play.google.com/store/apps/details?id=com.thyagoluciano.shihtzudoku). A versão para iPhone foi enviada à Apple em 14 de outubro e aguarda a revisão. Enquanto a Apple não responde, não sei se ela aprova.
+Começo pelo estado atual: o jogo já está disponível para Android, no [Google Play](https://play.google.com/store/apps/details?id=com.thyagoluciano.shihtzudoku), e para iPhone, na [App Store](https://apps.apple.com/us/app/shih-tzudoku/id6822452624). A versão para iPhone foi enviada à Apple em 14 de outubro e passou pela revisão.
 
 [![[assets/e1ad5e03-shihtzudoku-google-play-badge.png|180]]](https://play.google.com/store/apps/details?id=com.thyagoluciano.shihtzudoku)
 
-**App Store:** em breve
+[![[assets/02ae3ec8-shihtzudoku-app-store-badge.png|160]]](https://apps.apple.com/us/app/shih-tzudoku/id6822452624)
 
 ![[assets/42617f1a-shihtzudoku-home.png]]
 *A tela inicial do Shih Tzudoku, com a campanha, o desafio diário e o ranking.*
@@ -167,7 +167,6 @@ A lição que fica é que o assistente ajuda a preencher, mas quem decide e quem
 
 ## O que falta
 
-- Esperar a resposta da Apple sobre a versão para iPhone.
 - Fazer uma compra de teste de verdade e o login com Google no Android, e ver uma notificação chegando num iPhone e num Android.
 - Conferir os anúncios reais e a renovação diária das ajudas, que só dá para provar com o jogo publicado.
 - Chamar pessoas para jogar e calibrar a dificuldade dos níveis e a adaptação.
@@ -187,5 +186,5 @@ Alguns pontos que valem para quem quiser trabalhar com uma IA de programação:
 
 ## Onde me encontrar
 
-- Jogo no [Google Play](https://play.google.com/store/apps/details?id=com.thyagoluciano.shihtzudoku). Na App Store, em breve.
+- Jogo no [Google Play](https://play.google.com/store/apps/details?id=com.thyagoluciano.shihtzudoku) e na [App Store](https://apps.apple.com/us/app/shih-tzudoku/id6822452624).
 - Eu no [LinkedIn](https://www.linkedin.com/in/thyagoluciano/), onde conto o que estou aprendendo ao construir com IA.
