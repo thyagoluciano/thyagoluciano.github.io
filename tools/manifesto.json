@@ -6,6 +6,30 @@
     "slug": "second-brain",
     "slugs_anteriores": []
   },
+  "50-Conteudo/LinkedIn/Site - course2brain.md": {
+    "destino": "posts/course2brain-transformando-cursos-online-em-notas-conectadas-no-obsidian.md",
+    "sha256": "0717f74e37e58e333f3292aa9878d38ed5a8003aa4f22e3171952a574b75c471",
+    "slug": "course2brain-transformando-cursos-online-em-notas-conectadas-no-obsidian",
+    "slugs_anteriores": []
+  },
+  "50-Conteudo/Site/Projeto - Course2Brain.md": {
+    "destino": "ferramentas/course2brain.md",
+    "sha256": "5e94a3c376b00d02a5e0a81fdeaa72ba218f4042957d9f6a7169b41a6e67ed1e",
+    "slug": "course2brain",
+    "slugs_anteriores": []
+  },
+  "50-Conteudo/Site/Projeto - Estúdio de Retrato IA.md": {
+    "destino": "ferramentas/estudio-de-retrato-ia.md",
+    "sha256": "180bdf63c8eec062d3373bc0f4fb87177e7205eac3e9630417ab0d047c635258",
+    "slug": "estudio-de-retrato-ia",
+    "slugs_anteriores": []
+  },
+  "50-Conteudo/Site/Projeto - OmniDesk.md": {
+    "destino": "ferramentas/omnidesk.md",
+    "sha256": "3d5b85347a68a10f0d35fb2d2335c37d8ff81bb843ab8e0749bdbf3c6e9a5d4c",
+    "slug": "omnidesk",
+    "slugs_anteriores": []
+  },
   "50-Conteudo/Site/Site - Harness2.md": {
     "destino": "radar/harness2.md",
     "removida": "2026-11-04",
@@ -15,14 +39,8 @@
   },
   "50-Conteudo/Site/Site - Shih Tzudoku com Claude Code.md": {
     "destino": "posts/shihtzudoku-com-claude-code.md",
-    "sha256": "23ed3b8c8f32380077dce3e2ba0fdb0e0c1e2924d48510d32206c5af565a9e68",
+    "sha256": "beb69708c8dc3f57fab903007d4d2f7adfdb73438be484abfc7271256319716a",
     "slug": "shihtzudoku-com-claude-code",
-    "slugs_anteriores": []
-  },
-  "50-Conteudo/Site/Site - course2brain.md": {
-    "destino": "posts/course2brain-transformando-cursos-online-em-notas-conectadas-no-obsidian.md",
-    "sha256": "0717f74e37e58e333f3292aa9878d38ed5a8003aa4f22e3171952a574b75c471",
-    "slug": "course2brain-transformando-cursos-online-em-notas-conectadas-no-obsidian",
     "slugs_anteriores": []
   }
 }

@@ -1,15 +1,19 @@
 ---
 title: Course2Brain
 description: Extensão de Chrome e motor local que transformam aulas de cursos online em notas conectadas no Obsidian.
-categoria: EducationalApplication
-plataformas: Windows, macOS, Linux
-capa: static/ferramentas/capas/course2brain.jpg
 date: '2026-10-05'
+published: '2026-10-05'
+modified: '2026-10-05'
 tags:
 - ia
 - obsidian
 - ferramentas
 publish: true
+gerado: true
+tipo: minha-ferramenta
+capa: assets/a23415b5-course2brain-capa.jpg
+categoria: EducationalApplication
+plataformas: Windows, macOS, Linux
 ---
 
 Criei o Course2Brain para parar de assistir aula só para esquecer depois. Com um clique no navegador, ele pega o conteúdo da aula, transforma em uma nota de estudo no formato de Segundo Cérebro e liga essa nota às que você já tem no Obsidian. É o que uso no fluxo descrito em [[posts/course2brain-transformando-cursos-online-em-notas-conectadas-no-obsidian|Transformando cursos online em notas conectadas no Obsidian]].

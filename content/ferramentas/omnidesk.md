@@ -1,18 +1,22 @@
 ---
 title: OmniDesk
 description: Sincroniza a área de transferência e envia arquivos entre seus computadores e o celular pela rede local, sem nuvem e sem conta.
-categoria: UtilitiesApplication
-plataformas: Linux, macOS, Windows, iOS, Android
-capa: static/ferramentas/capas/omnidesk.jpg
 date: '2026-10-05'
+published: '2026-10-05'
+modified: '2026-10-05'
 tags:
 - ferramentas
 - produtividade
 - open-source
 publish: true
+gerado: true
+tipo: minha-ferramenta
+capa: assets/2f8d0d5c-omnidesk-capa.jpg
+categoria: UtilitiesApplication
+plataformas: Linux, macOS, Windows, iOS, Android
 ---
 
-<p><img src="/static/ferramentas/capas/omnidesk.jpg" width="1200" height="630" alt="OmniDesk: painel no computador e aplicativo no celular" style="height:auto" /></p>
+![[assets/2f8d0d5c-omnidesk-capa.jpg|OmniDesk: painel no computador e aplicativo no celular]]
 
 O OmniDesk leva texto e arquivos de um aparelho para outro sem passar pela internet. Você copia um texto em um aparelho e cola no outro, ou arrasta um arquivo para o dispositivo de destino. Tudo fica na sua rede Wi-Fi, direto de um aparelho para o outro.
 
@@ -36,21 +40,26 @@ Como o Course2Brain, ele não roda no navegador: você instala no computador e n
 
 O painel lista os dispositivos pareados e os que foram descobertos na rede, e tem uma página para a área de transferência, com o histórico de cópias, e outra para envio de arquivos.
 
-![Dispositivos pareados e descobertos na rede](/static/ferramentas/omnidesk/desktop-dispositivos.png)
+![[assets/c3423e95-omnidesk-desktop-dispositivos.png|Dispositivos pareados e descobertos na rede]]
 
-![Histórico da área de transferência](/static/ferramentas/omnidesk/desktop-area-de-transferencia.png)
+![[assets/704f1a6c-omnidesk-desktop-area-de-transferencia.png|Histórico da área de transferência]]
 
-![Envio de arquivos por arrastar e soltar](/static/ferramentas/omnidesk/desktop-arquivos.png)
+![[assets/180f2353-omnidesk-desktop-arquivos.png|Envio de arquivos por arrastar e soltar]]
 
 ## No celular
 
 O aplicativo faz o pareamento pela câmera e, depois, envia clipboard, fotos e arquivos para o computador. A aba de transferências guarda o histórico do que foi enviado e recebido.
 
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;align-items:start">
-<img src="/static/ferramentas/omnidesk/mobile-sem-pareamento.png" width="462" height="1000" alt="Tela inicial do aplicativo sem computador pareado, com o botão Escanear QR Code" loading="lazy" style="height:auto" />
-<img src="/static/ferramentas/omnidesk/mobile-pareado.png" width="462" height="1000" alt="Aplicativo com um computador pareado e online, com os botões Enviar Clipboard, Fotos e Arquivos" loading="lazy" style="height:auto" />
-<img src="/static/ferramentas/omnidesk/mobile-historico-textos.png" width="462" height="1000" alt="Histórico de transferências filtrado por textos enviados ao computador" loading="lazy" style="height:auto" />
-<img src="/static/ferramentas/omnidesk/mobile-historico-fotos.png" width="462" height="1000" alt="Histórico de transferências filtrado por fotos enviadas ao computador, com o tamanho de cada uma" loading="lazy" style="height:auto" />
+<div class="galeria">
+
+![[assets/c79f14ec-omnidesk-mobile-sem-pareamento.png|Tela inicial do aplicativo sem computador pareado, com o botão Escanear QR Code]]
+
+![[assets/8eca4f66-omnidesk-mobile-pareado.png|Aplicativo com um computador pareado e online, com os botões Enviar Clipboard, Fotos e Arquivos]]
+
+![[assets/e4014ffe-omnidesk-mobile-historico-textos.png|Histórico de transferências filtrado por textos enviados ao computador]]
+
+![[assets/12919c91-omnidesk-mobile-historico-fotos.png|Histórico de transferências filtrado por fotos enviadas ao computador, com o tamanho de cada uma]]
+
 </div>
 
 ## Como instalar

@@ -19,9 +19,7 @@ Neste texto eu conto como funciona o jogo, como organizei o trabalho com a IA, o
 
 Começo pelo estado atual: o jogo já está disponível para Android, no [Google Play](https://play.google.com/store/apps/details?id=com.thyagoluciano.shihtzudoku), e para iPhone, na [App Store](https://apps.apple.com/us/app/shih-tzudoku/id6822452624). A versão para iPhone foi enviada à Apple em 14 de outubro e passou pela revisão.
 
-[![[assets/e1ad5e03-shihtzudoku-google-play-badge.png|180]]](https://play.google.com/store/apps/details?id=com.thyagoluciano.shihtzudoku)
-
-[![[assets/02ae3ec8-shihtzudoku-app-store-badge.png|160]]](https://apps.apple.com/us/app/shih-tzudoku/id6822452624)
+[![[assets/e1ad5e03-shihtzudoku-google-play-badge.png|180]]](https://play.google.com/store/apps/details?id=com.thyagoluciano.shihtzudoku) [![[assets/02ae3ec8-shihtzudoku-app-store-badge.png|160]]](https://apps.apple.com/us/app/shih-tzudoku/id6822452624)
 
 ![[assets/42617f1a-shihtzudoku-home.png]]
 *A tela inicial do Shih Tzudoku, com a campanha, o desafio diário e o ranking.*

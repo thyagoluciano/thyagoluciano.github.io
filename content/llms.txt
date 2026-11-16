@@ -2,7 +2,7 @@
 
 > Desenvolvedor, explorando tecnologias e compartilhando conhecimento.
 
-Site pessoal com textos sobre inteligência artificial, engenharia de software e liderança, além de ferramentas, resenhas de livros e encontros do clube de leitura. Conteúdo em português do Brasil.
+Site pessoal com textos sobre inteligência artificial, engenharia de software e liderança, além de ferramentas, games, resenhas de livros e encontros do clube de leitura. Conteúdo em português do Brasil.
 
 ## Posts
 
