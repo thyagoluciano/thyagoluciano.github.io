@@ -128,9 +128,10 @@ def test_layout_seo_e_desempenho(amb, tmp_path):
     assert 'class="voltar-ao-topo"' in home
     assert (publico / "static" / "avatar.png").exists() and (publico / "arquivo.html").exists()
     assert "/index.xml" in home  # RSS na barra lateral
-    # home em vitrines (Posts, Ferramentas, Games, Radar e Leituras), sem o texto de apresentação nem o título "Início"
-    assert all(f'<h2>{v}</h2>' in home for v in ("Posts", "Ferramentas", "Games", "Radar", "Leituras")) and 'class="article-title"' not in home
-    assert "Como uso IA no dia a dia" in home.split("<h2>Posts</h2>")[1]
+    # home com feed único de cards (sem vitrines por seção), sem o texto de apresentação nem o título "Início"
+    assert "<h2>Publicações recentes</h2>" in home and 'class="article-title"' not in home
+    assert not any(f"<h2>{v}</h2>" in home for v in ("Posts", "Ferramentas", "Games", "Radar", "Leituras"))
+    assert "Como uso IA no dia a dia" in home.split("<h2>Publicações recentes</h2>")[1]
     # orçamento de JS (RNF3): o grafo do Quartz (d3 + pixi) passava de 600 KB e derrubava o Lighthouse mobile
     assert 'getElementById("conteudo")' in (publico / "postscript.js").read_text(encoding="utf-8")  # foco após "pular"
     assert "popover-inner" not in (publico / "postscript.js").read_text(encoding="utf-8")  # sem prévia ao passar o mouse
@@ -155,18 +156,16 @@ def test_cards_listas_tags_e_arquivo(amb, tmp_path):
         return re.findall(r'<li class="card[^"]*">.*?<h3><a class="internal" href="[^"]*">([^<]+)</a></h3>', html, re.S)
 
     home = ler("index.html")
-    posts_home, resto = home.split("<h2>Ferramentas</h2>")
-    ferramentas_home, resto1 = resto.split("<h2>Games</h2>")
-    games_home, resto2 = resto1.split("<h2>Radar</h2>")
-    radar_home, leituras_home = resto2.split("<h2>Leituras</h2>")
-    assert cards(posts_home) == ["Como uso IA no dia a dia", "Contexto importa", "Agendado passado"]  # mais recente primeiro
-    assert cards(ferramentas_home) == ["Ferramenta de Exemplo"]
-    assert cards(games_home) == ["Game de Exemplo"]
-    assert cards(radar_home) == ["Quartz"]
-    assert sorted(cards(leituras_home)) == ["A Arte da Guerra", "Setembro 2026"]
-    assert posts_home.count('class="card-capa"') == 1  # só o artigo com capa mostra imagem
-    assert 'class="card-tipo">Post</span>' in home and "1 min" in home
-    assert home.count("Ver todos") == 5 and 'href="./posts/"' in home
+    feed = cards(home)  # todas as seções juntas, mais recente primeiro
+    assert sorted(feed) == sorted([
+        "Como uso IA no dia a dia", "Contexto importa", "Agendado passado", "Ferramenta de Exemplo",
+        "Game de Exemplo", "Quartz", "A Arte da Guerra", "Setembro 2026",
+    ])
+    posts_no_feed = [c for c in feed if c in ("Como uso IA no dia a dia", "Contexto importa", "Agendado passado")]
+    assert posts_no_feed == ["Como uso IA no dia a dia", "Contexto importa", "Agendado passado"]  # ordem por data preservada
+    assert 'class="card-capa"' in home  # o artigo com capa mostra imagem
+    assert 'class="card-tipo">Post</span>' in home and 'class="card-tipo">Game</span>' in home and "1 min" in home
+    assert home.count("Ver arquivo") == 1 and "Ver todos" not in home
 
     assert cards(ler("posts/index.html")) == ["Como uso IA no dia a dia", "Contexto importa", "Agendado passado"]
     assert sorted(cards(ler("leituras/index.html"))) == ["A Arte da Guerra", "Setembro 2026"]  # resenha e encontro

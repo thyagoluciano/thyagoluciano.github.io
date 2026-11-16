@@ -2,7 +2,7 @@ import { PageLayout, SharedLayout } from "./quartz/cfg"
 import * as Component from "./quartz/components"
 // Componentes novos (SPEC 9.3 e SPEC-TEMA-CHIRPY): importados direto para não editar o index.ts do Quartz
 import Cabeca from "./quartz/components/Cabeca"
-import Vitrines from "./quartz/components/Vitrines"
+import FeedRecente from "./quartz/components/FeedRecente"
 import Arquivo from "./quartz/components/Arquivo"
 import Rodape from "./quartz/components/Rodape"
 import BarraLateral from "./quartz/components/BarraLateral"
@@ -77,7 +77,7 @@ export const sharedPageComponents: SharedLayout = {
   header: barraSuperior,
   afterBody: [
     Component.ConditionalRender({
-      component: Vitrines(),
+      component: FeedRecente(),
       condition: (page) => slugDe(page) === "index",
     }),
     Component.ConditionalRender({
