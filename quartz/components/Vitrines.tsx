@@ -22,11 +22,12 @@ const PADRAO: Vitrine[] = [
     pasta: "ferramentas",
     vazio: "As primeiras ferramentas chegam em breve.",
   },
+  { titulo: "Games", pasta: "games", vazio: "Os primeiros games chegam em breve." },
   { titulo: "Radar", pasta: "radar", vazio: "Os primeiros itens do radar chegam em breve." },
   { titulo: "Leituras", pasta: "leituras", vazio: "As primeiras resenhas chegam em breve." },
 ]
 
-/** Página inicial: uma vitrine de cards por seção (Posts, Ferramentas, Radar e Leituras). */
+/** Página inicial: uma vitrine de cards por seção (Posts, Ferramentas, Games, Radar e Leituras). */
 export default ((opts?: Partial<Options>) => {
   const vitrines = opts?.vitrines ?? PADRAO
   const limite = opts?.limite ?? 3

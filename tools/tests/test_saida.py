@@ -121,7 +121,7 @@ def test_embeds_de_imagem_e_de_nota(amb):
     res = amb.exportar()
     texto = amb.ler("posts/como-uso-ia.md")
     assets = sorted(p.name for p in (amb.content / "assets").iterdir())
-    assert len(assets) == 2  # usada.png (uma cópia só) e a capa
+    assert len(assets) == 4  # usada.png (uma cópia só), a capa e as duas telas da ferramenta de exemplo
     usada = next(a for a in assets if a.endswith("-usada.png"))
     assert f"![[assets/{usada}]]" in texto and f"![[assets/{usada}|300]]" in texto
     assert "nao-usada" not in "".join(assets)

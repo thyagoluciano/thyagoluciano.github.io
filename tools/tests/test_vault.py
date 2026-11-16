@@ -19,7 +19,7 @@ def test_vault_nao_e_alterado(amb):
 def test_simular_nao_escreve_nada(amb):
     antes = hashes(amb.content)
     res = amb.exportar(simular=True)
-    assert res.simulacao and len(res.novas) == 6 and not res.aplicado
+    assert res.simulacao and len(res.novas) == 8 and not res.aplicado
     assert hashes(amb.content) == antes and not amb.manifesto.exists()
 
 
@@ -93,7 +93,7 @@ def test_cli_json_e_codigos_de_saida(amb):
     base = ["--vault", str(amb.vault), "--content", str(amb.content), "--manifesto", str(amb.manifesto), "--hoje", "2026-09-28"]
     r = cli(*base, "--simular", "--json")
     dados = json.loads(r.stdout)
-    assert r.returncode == 0 and len(dados["novas"]) == 6 and len(dados["erros"]) == 11
+    assert r.returncode == 0 and len(dados["novas"]) == 8 and len(dados["erros"]) == 12
     assert dados["novas"][0]["url"].startswith("https://thyagoluciano.com.br/")
     assert dados["auditoria"]["ok"] is True
     assert cli(*base, "--estrito").returncode == 1
@@ -119,5 +119,5 @@ def test_cli_sem_vault_configurado(monkeypatch, amb):
 def test_resumo_em_texto(amb):
     base = ["--vault", str(amb.vault), "--content", str(amb.content), "--manifesto", str(amb.manifesto), "--hoje", "2026-09-28"]
     r = cli(*base, "--simular")
-    assert "SIMULAÇÃO" in r.stdout and "6 novas" in r.stdout and "11 erros" in r.stdout
+    assert "SIMULAÇÃO" in r.stdout and "8 novas" in r.stdout and "12 erros" in r.stdout
     assert "Auditoria de privacidade: sem ocorrências" in r.stdout

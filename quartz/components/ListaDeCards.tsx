@@ -10,6 +10,8 @@ import Icone from "./Icone"
 export const ROTULO_TIPO: Record<string, string> = {
   post: "Post",
   ferramenta: "Ferramenta",
+  "minha-ferramenta": "Ferramenta",
+  game: "Game",
   resenha: "Resenha",
   encontro: "Encontro",
 }
@@ -22,15 +24,27 @@ export const ROTULO_ESTADO: Record<string, string> = {
   descartei: "Descartei",
 }
 
-/** Só notas geradas pelo exportador: páginas fixas nunca entram em cards, painéis ou arquivo. */
-export const exportada = (f: QuartzPluginData) => f.frontmatter?.gerado === true
+/** Pastas de projetos próprios (ferramentas e games): vêm do vault (`tipo: projeto`) ou, antes da migração, do repositório. */
+export const PASTAS_PROPRIAS = ["ferramentas", "games"]
 
-/** Páginas de ferramentas escritas no repositório (content/ferramentas/<ferramenta>.md, sem `gerado`). */
+/** Página de ferramenta própria (content/ferramentas/<ferramenta>.md). */
 export const ferramentaPropria = (f: QuartzPluginData) =>
   f.slug!.startsWith("ferramentas/") && f.slug !== "ferramentas/index"
 
-/** Exportadas do vault mais as ferramentas escritas no repositório: o que Tags e Arquivo listam. */
-export const publicada = (f: QuartzPluginData) => exportada(f) || ferramentaPropria(f)
+/** Página de game (content/games/<game>.md). */
+export const gamePropria = (f: QuartzPluginData) =>
+  f.slug!.startsWith("games/") && f.slug !== "games/index"
+
+/**
+ * Notas de texto geradas pelo exportador (posts, radar, leituras): painéis, "Leia também" e
+ * anterior/próximo só usam estas. Páginas fixas e projetos (ferramentas e games) ficam de fora.
+ */
+export const exportada = (f: QuartzPluginData) =>
+  f.frontmatter?.gerado === true && !ferramentaPropria(f) && !gamePropria(f)
+
+/** Exportadas do vault mais as ferramentas e games: o que Tags e Arquivo listam. */
+export const publicada = (f: QuartzPluginData) =>
+  exportada(f) || ferramentaPropria(f) || gamePropria(f)
 
 /** Data de publicação decrescente; empate por título. */
 export const maisRecentesPrimeiro =

@@ -10,6 +10,8 @@ EXPORTADAS = {
     "leituras/a-arte-da-guerra.md",
     "leituras/encontros/encontro-setembro-2026.md",
     "radar/quartz.md",
+    "ferramentas/ferramenta-exemplo.md",
+    "games/game-exemplo.md",
 }
 
 
@@ -27,6 +29,8 @@ def test_destinos_por_tipo(amb):
     amb.exportar()
     assert 'tipo: post' in amb.ler("posts/como-uso-ia.md")
     assert 'tipo: ferramenta' in amb.ler("radar/quartz.md")
+    assert 'tipo: minha-ferramenta' in amb.ler("ferramentas/ferramenta-exemplo.md")
+    assert 'tipo: game' in amb.ler("games/game-exemplo.md")
     assert 'tipo: resenha' in amb.ler("leituras/a-arte-da-guerra.md")
     assert 'tipo: encontro' in amb.ler("leituras/encontros/encontro-setembro-2026.md")
 
@@ -40,6 +44,7 @@ def test_destinos_por_tipo(amb):
         ("50-Conteudo/Site/Site - Agendado futuro.md", "futuro"),
         ("50-Conteudo/Site/Site - Sem descricao.md", "sem descricao"),
         ("50-Conteudo/Site/Site - Canal errado.md", "canal"),
+        ("50-Conteudo/Site/Projeto - Sem subtipo.md", "subtipo"),
         ("50-Conteudo/Site/Site - Duplicado A.md", "duplicado"),
         ("50-Conteudo/Site/Site - Duplicado B.md", "duplicado"),
         ("30-Pessoas/Pessoa - Fulano.md", "não é exportável"),

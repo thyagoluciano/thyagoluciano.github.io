@@ -40,8 +40,8 @@ RAIZ = Path(__file__).resolve().parent.parent
 DOMINIO = "thyagoluciano.com.br"
 
 PASTAS_EXCLUIDAS = {"00-Inbox", "90-Templates", "_sistema", ".obsidian", ".smart-env"}
-PASTAS_GERADAS = ("posts", "radar", "leituras", "assets")
-PASTAS_DE_NOTAS = PASTAS_GERADAS[:3]
+PASTAS_GERADAS = ("posts", "radar", "leituras", "ferramentas", "games", "assets")
+PASTAS_DE_NOTAS = ("posts", "radar", "leituras", "ferramentas", "games")
 EXT_IMAGEM = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg"}
 
 CAMPOS_PERMITIDOS = (
@@ -66,7 +66,12 @@ CAMPOS_PERMITIDOS = (
     "estado",
     "por_que",
     "licenca",
+    # Projetos próprios (tipo: projeto)
+    "plataformas",
+    "genero",
 )
+SUBTIPOS_PROJETO = {"ferramenta": ("ferramentas", "minha-ferramenta"), "game": ("games", "game")}
+TIPOS_PROJETO = tuple(t for _, t in SUBTIPOS_PROJETO.values())
 
 # Radar: projetos de outras pessoas que o autor quer usar ou experimentar
 ESTADOS_RADAR = ("quero-testar", "testando", "uso", "descartei")
@@ -84,11 +89,12 @@ LLMS_NOME = "Thyago Luciano"
 LLMS_RESUMO = "Desenvolvedor, explorando tecnologias e compartilhando conhecimento."
 LLMS_DETALHES = (
     "Site pessoal com textos sobre inteligência artificial, engenharia de software e liderança, "
-    "além de ferramentas, resenhas de livros e encontros do clube de leitura. Conteúdo em português do Brasil."
+    "além de ferramentas, games, resenhas de livros e encontros do clube de leitura. Conteúdo em português do Brasil."
 )
 LLMS_SECOES = (  # (pasta em content/, título da seção)
     ("posts", "Posts"),
     ("ferramentas", "Ferramentas"),
+    ("games", "Games"),
     ("radar", "Radar"),
     ("leituras", "Leituras"),
 )
@@ -98,7 +104,7 @@ MARCA_INICIO = "<!-- gerado:lendo-agora -->"
 MARCA_FIM = "<!-- /gerado:lendo-agora -->"
 
 PREFIXO = re.compile(
-    r"^(?:Site|Livro|Mapa|Ideia|Encontro|Fonte|Conteúdo|Conteudo|Destaques|Clube|Artigo|Ferramenta) - "
+    r"^(?:Site|Livro|Mapa|Ideia|Encontro|Fonte|Conteúdo|Conteudo|Destaques|Clube|Artigo|Ferramenta|Projeto) - "
 )
 SLUG = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 FRONTMATTER = re.compile(r"\A---[ \t]*\n(.*?)^---[ \t]*$\n?(.*)\Z", re.S | re.M)
@@ -287,6 +293,8 @@ def destino_de(fm: dict) -> tuple[str, str] | None:
         return "posts", "post"
     if tipo == "ferramenta":
         return "radar", "ferramenta"
+    if tipo == "projeto" and sub in SUBTIPOS_PROJETO:
+        return SUBTIPOS_PROJETO[sub]
     if tipo == "fonte" and sub == "livro":
         return "leituras", "resenha"
     if tipo == "encontro":
@@ -325,6 +333,10 @@ def verificar(nota: Nota, hoje: date) -> list[str]:
     if destino is None:
         if fm.get("tipo") == "conteudo":
             motivos.append(f"canal '{fm.get('canal')}' não é 'site'")
+        elif fm.get("tipo") == "projeto":
+            motivos.append(
+                f"projeto com subtipo {fm.get('subtipo')!r} inválido ou ausente (use {', '.join(SUBTIPOS_PROJETO)})"
+            )
         elif fm.get("tipo") in TIPOS_SO_NO_OBSIDIAN:
             motivos.append(
                 f"tipo '{fm.get('tipo')}' não é publicado no site (fica só no Obsidian); "
@@ -348,7 +360,7 @@ def verificar(nota: Nota, hoje: date) -> list[str]:
         motivos.append(f"descricao com {len(descricao.strip())} caracteres (máximo 160)")
     if destino and destino[1] == "ferramenta":
         motivos.extend(verificar_ferramenta(fm))
-    if fm.get("tipo") == "conteudo" and destino:
+    if fm.get("tipo") in ("conteudo", "projeto") and destino:
         status = fm.get("status")
         if status not in ("publicado", "agendado"):
             motivos.append(f"status '{status}' (esperado publicado ou agendado)")
@@ -405,6 +417,15 @@ H1 = re.compile(r"^#\s+(.+?)\s*#*\s*$")
 CODIGO = re.compile(r"(```.*?(?:```|\Z)|~~~.*?(?:~~~|\Z)|`[^`\n]+`)", re.S)
 EMBED = re.compile(r"!\[\[([^\[\]|]+?)(?:\|([^\[\]]*))?\]\]")
 WIKILINK = re.compile(r"(?<!!)\[\[([^\[\]|]*?)(?:\|([^\[\]]*))?\]\]")
+
+
+# Duas ou mais imagens em linhas seguidas viram uma galeria (prints de celular lado a lado)
+GALERIA = re.compile(r"(?:^!\[\[assets/[^\]\n]+\]\][ \t]*\n){1,}^!\[\[assets/[^\]\n]+\]\][ \t]*$", re.M)
+
+
+def galeria(m: re.Match) -> str:
+    imagens = [linha.strip() for linha in m.group(0).splitlines() if linha.strip()]
+    return '<div class="galeria">\n\n' + "\n\n".join(imagens) + "\n\n</div>"
 
 
 def fora_de_codigo(texto: str, fn) -> str:
@@ -576,7 +597,8 @@ def transformar_corpo(el: Elegivel, ctx: Contexto) -> str:
         return f"[[{destino.rota}{'#' + secao if secao else ''}|{texto_link}]]"
 
     def tudo(trecho: str) -> str:
-        return WIKILINK.sub(links, EMBED.sub(embeds, trecho))
+        trecho = WIKILINK.sub(links, EMBED.sub(embeds, trecho))
+        return GALERIA.sub(galeria, trecho) if el.tipo in TIPOS_PROJETO else trecho
 
     texto = fora_de_codigo(texto, tudo)
     return colapsar_brancos(marcar_codigo(texto))
@@ -644,6 +666,14 @@ def montar_frontmatter(el: Elegivel, ctx: Contexto, aliases: list[str]) -> dict:
             valor = fm.get(campo)
             if isinstance(valor, str) and valor.strip():
                 saida[campo] = valor.strip()
+    if el.tipo in TIPOS_PROJETO:
+        for campo in ("categoria", "genero"):
+            valor = fm.get(campo)
+            if isinstance(valor, str) and valor.strip():
+                saida[campo] = valor.strip()
+        plataformas = ", ".join(str(v).strip() for v in _lista(fm.get("plataformas")) if str(v).strip())
+        if plataformas:
+            saida["plataformas"] = plataformas
     if el.tipo == "resenha":
         if fm.get("autor"):
             saida["autor_livro"] = strip_prefixo(_nome_do_link(fm["autor"]))

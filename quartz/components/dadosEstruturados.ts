@@ -1,7 +1,7 @@
 import { GlobalConfiguration } from "../cfg"
 import { QuartzPluginData } from "../plugins/vfile"
 import { getDate } from "./Date"
-import { dataDeAtualizacao, ferramentaPropria } from "./ListaDeCards"
+import { dataDeAtualizacao, ferramentaPropria, gamePropria } from "./ListaDeCards"
 
 interface Contexto {
   cfg: GlobalConfiguration
@@ -36,7 +36,7 @@ const limpar = <T extends Record<string, unknown>>(objeto: T): T =>
 /**
  * Dados estruturados (schema.org) da página, como JSON-LD:
  * home → WebSite + Person; posts → BlogPosting; resenhas e encontros → Article;
- * ferramentas escritas no repositório → SoftwareApplication. Demais páginas: nenhum.
+ * ferramentas escritas no repositório → SoftwareApplication; games → VideoGame. Demais páginas: nenhum.
  */
 export function dadosEstruturados({ cfg, fileData, url, imagem, descricao }: Contexto) {
   const origem = `https://${cfg.baseUrl}`
@@ -113,6 +113,28 @@ export function dadosEstruturados({ cfg, fileData, url, imagem, descricao }: Con
         operatingSystem: fm.plataformas,
         isAccessibleForFree: true,
         offers: { "@type": "Offer", price: 0, priceCurrency: "BRL" },
+        author: autor,
+        datePublished: iso(publicada),
+        dateModified: iso(atualizada ?? publicada),
+        inLanguage: "pt-BR",
+        isPartOf: site,
+      }),
+    }
+  }
+
+  if (gamePropria(fileData)) {
+    return {
+      "@context": "https://schema.org",
+      ...limpar({
+        "@type": "VideoGame",
+        name: titulo,
+        description: descricao,
+        url,
+        image: imagem,
+        genre: fm.genero,
+        gamePlatform: fm.plataformas,
+        applicationCategory: "GameApplication",
+        operatingSystem: fm.plataformas,
         author: autor,
         datePublished: iso(publicada),
         dateModified: iso(atualizada ?? publicada),

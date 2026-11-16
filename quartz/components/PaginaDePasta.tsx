@@ -2,7 +2,7 @@ import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } fro
 import { Root } from "hast"
 import { ComponentChildren } from "preact"
 import { htmlToJsx } from "../util/jsx"
-import { Cartoes, exportada, maisRecentesPrimeiro } from "./ListaDeCards"
+import { Cartoes, PASTAS_PROPRIAS, exportada, maisRecentesPrimeiro } from "./ListaDeCards"
 
 // Corpo das páginas de pasta (/posts/, /radar/, /leituras/...): o texto do index.md
 // seguido de cards com as notas exportadas da pasta. Substitui o FolderContent do Quartz.
@@ -14,13 +14,13 @@ export default (() => {
     cfg,
   }: QuartzComponentProps) => {
     const pasta = fileData.slug!.replace(/\/?index$/, "")
-    // Ferramentas são escritas no repositório (sem `gerado`), então entram na lista pela pasta
-    const escritaNoRepositorio = pasta === "ferramentas"
+    // Ferramentas e games também entram pela pasta: antes da migração eram escritos no repositório, sem `gerado`
+    const escritaNoRepositorio = PASTAS_PROPRIAS.includes(pasta)
     const paginas = allFiles
       .filter(
         (f) =>
           f.slug!.startsWith(`${pasta}/`) &&
-          (exportada(f) || (escritaNoRepositorio && f.slug !== "ferramentas/index")),
+          (exportada(f) || (escritaNoRepositorio && f.slug !== `${pasta}/index`)),
       )
       .sort(maisRecentesPrimeiro(cfg))
     const semTexto = (tree as Root).children.length === 0

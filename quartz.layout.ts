@@ -34,8 +34,11 @@ const REDES: Record<string, string> = {
 const links = Object.fromEntries(Object.entries(REDES).filter(([, endereco]) => endereco))
 
 const slugDe = (page: { fileData: { slug?: string } }) => page.fileData.slug ?? ""
-const geradoPeloExportador = (page: { fileData: { frontmatter?: Record<string, any> } }) =>
-  page.fileData.frontmatter?.gerado === true
+// Blocos de post (meta, newsletter, Leia também...) só nas notas de texto: ferramentas e games
+// também são gerados, mas têm página própria, sem esses blocos.
+const geradoPeloExportador = (page: { fileData: { slug?: string; frontmatter?: Record<string, any> } }) =>
+  page.fileData.frontmatter?.gerado === true &&
+  !["ferramentas/", "games/"].some((pasta) => slugDe(page).startsWith(pasta))
 
 const tipoDe = (page: { fileData: { frontmatter?: Record<string, any> } }) =>
   String(page.fileData.frontmatter?.tipo ?? "")

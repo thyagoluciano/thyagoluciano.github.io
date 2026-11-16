@@ -261,3 +261,21 @@ button:focus-visible {
 .capa-post img {
   max-height: 24rem;
 }
+
+// Galeria das páginas de ferramentas e games: imagens em linhas seguidas (prints de celular) lado a lado
+.galeria {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  align-items: start;
+  margin: 1rem 0;
+
+  p {
+    margin: 0;
+  }
+
+  img {
+    height: auto;
+    margin: 0;
+  }
+}

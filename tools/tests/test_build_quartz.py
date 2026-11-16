@@ -17,10 +17,14 @@ pytestmark = pytest.mark.skipif(
 
 def paginas_reais():
     """Páginas fixas do repositório. Ficam de fora as notas geradas pelo exportador: o vault de exemplo
-    as substitui, e os posts reais mudariam as contagens (tags, cards, arquivo)."""
+    as substitui, e os posts reais mudariam as contagens (tags, cards, arquivo). Ferramentas e games reais
+    também ficam de fora (só os index.md entram): antes da migração eram escritos à mão, depois vêm do vault."""
     content = RAIZ / "content"
     for arq in [*content.rglob("*.md"), content / "robots.txt"]:
         if arq.suffix == ".md" and "\ngerado: true" in arq.read_text(encoding="utf-8"):
+            continue
+        rel = arq.relative_to(content).parts
+        if rel[0] in ("ferramentas", "games") and arq.name != "index.md":
             continue
         yield arq
 
@@ -124,8 +128,8 @@ def test_layout_seo_e_desempenho(amb, tmp_path):
     assert 'class="voltar-ao-topo"' in home
     assert (publico / "static" / "avatar.png").exists() and (publico / "arquivo.html").exists()
     assert "/index.xml" in home  # RSS na barra lateral
-    # home em vitrines (Posts, Ferramentas, Radar e Leituras), sem o texto de apresentação nem o título "Início"
-    assert all(f'<h2>{v}</h2>' in home for v in ("Posts", "Ferramentas", "Radar", "Leituras")) and 'class="article-title"' not in home
+    # home em vitrines (Posts, Ferramentas, Games, Radar e Leituras), sem o texto de apresentação nem o título "Início"
+    assert all(f'<h2>{v}</h2>' in home for v in ("Posts", "Ferramentas", "Games", "Radar", "Leituras")) and 'class="article-title"' not in home
     assert "Como uso IA no dia a dia" in home.split("<h2>Posts</h2>")[1]
     # orçamento de JS (RNF3): o grafo do Quartz (d3 + pixi) passava de 600 KB e derrubava o Lighthouse mobile
     assert 'getElementById("conteudo")' in (publico / "postscript.js").read_text(encoding="utf-8")  # foco após "pular"
@@ -152,15 +156,17 @@ def test_cards_listas_tags_e_arquivo(amb, tmp_path):
 
     home = ler("index.html")
     posts_home, resto = home.split("<h2>Ferramentas</h2>")
-    ferramentas_home, resto2 = resto.split("<h2>Radar</h2>")
+    ferramentas_home, resto1 = resto.split("<h2>Games</h2>")
+    games_home, resto2 = resto1.split("<h2>Radar</h2>")
     radar_home, leituras_home = resto2.split("<h2>Leituras</h2>")
     assert cards(posts_home) == ["Como uso IA no dia a dia", "Contexto importa", "Agendado passado"]  # mais recente primeiro
-    assert sorted(cards(ferramentas_home)) == ["Course2Brain", "Estúdio de Retrato IA", "OmniDesk"]
+    assert cards(ferramentas_home) == ["Ferramenta de Exemplo"]
+    assert cards(games_home) == ["Game de Exemplo"]
     assert cards(radar_home) == ["Quartz"]
     assert sorted(cards(leituras_home)) == ["A Arte da Guerra", "Setembro 2026"]
     assert posts_home.count('class="card-capa"') == 1  # só o artigo com capa mostra imagem
     assert 'class="card-tipo">Post</span>' in home and "1 min" in home
-    assert home.count("Ver todos") == 4 and 'href="./posts/"' in home
+    assert home.count("Ver todos") == 5 and 'href="./posts/"' in home
 
     assert cards(ler("posts/index.html")) == ["Como uso IA no dia a dia", "Contexto importa", "Agendado passado"]
     assert sorted(cards(ler("leituras/index.html"))) == ["A Arte da Guerra", "Setembro 2026"]  # resenha e encontro
@@ -177,18 +183,30 @@ def test_cards_listas_tags_e_arquivo(amb, tmp_path):
         assert 'class="section-li' not in pagina  # a lista padrão do Quartz foi substituída
         assert "<h2 " in pagina and pagina.index("<h2") < pagina.index('class="cards"')  # h1 > h2 > h3
 
+    games = ler("games/index.html")
+    assert cards(games) == ["Game de Exemplo"] and "<span>Games</span>" in games and 'aria-current="page"' in games
+    assert 'class="card-tipo">Game</span>' in games
+
+    # página de ferramenta vinda do vault: galeria, sem os blocos de post e fora dos painéis e do "Leia também"
+    ferramenta = ler("ferramentas/ferramenta-exemplo.html")
+    assert 'class="galeria"' in ferramenta and ferramenta.count("<img") >= 4
+    assert "SEGREDO" not in ferramenta and 'data-router-ignore href="../static/ferramentas/ferramenta-exemplo/"' in ferramenta
+    assert "Leia também" not in ferramenta and 'class="meta-post' not in ferramenta
+    assert "Ferramenta de Exemplo" not in ler("posts/index.html")
+    assert '"@type":"SoftwareApplication"' in ferramenta and '"@type":"VideoGame"' in ler("games/game-exemplo.html")
+
     # tags: contagem no índice e cards na página da tag
     indice = ler("tags/index.html")
-    assert re.search(r'>ia</a><span class="nuvem-contagem">4</span>', indice)  # 2 notas do vault de exemplo + 2 ferramentas reais
+    assert re.search(r'>ia</a><span class="nuvem-contagem">3</span>', indice)  # 2 notas do vault de exemplo + a ferramenta de exemplo
     assert indice.index(">ia</a>") < indice.index(">contexto</a>")  # mais usadas primeiro
-    assert sorted(cards(ler("tags/ia.html"))) == ["Como uso IA no dia a dia", "Contexto importa", "Course2Brain", "Estúdio de Retrato IA"]
-    assert "4 publicações" in ler("tags/ia.html") and "1 publicação<" in ler("tags/contexto.html")
+    assert sorted(cards(ler("tags/ia.html"))) == ["Como uso IA no dia a dia", "Contexto importa", "Ferramenta de Exemplo"]
+    assert "3 publicações" in ler("tags/ia.html") and "1 publicação<" in ler("tags/contexto.html")
 
     # arquivo: ano e mês em ordem decrescente, sem páginas fixas nem notas bloqueadas
     arquivo = ler("arquivo.html")
     assert arquivo.index("<h2>2026</h2>") < arquivo.index("<h2>2020</h2>")
     assert arquivo.index("<h3>Setembro</h3>") < arquivo.index("<h3>Março</h3>") < arquivo.index("<h3>Janeiro</h3>")
-    for tipo in ("Encontro", "Resenha", "Ferramenta", "Post"):
+    for tipo in ("Encontro", "Resenha", "Ferramenta", "Game", "Post"):
         assert f'class="arquivo-tipo">{tipo}</span>' in arquivo
     assert "Inteligência Artificial" not in arquivo  # mapas não vão ao site
 

@@ -91,16 +91,19 @@ content/
 │   └── index.md          # fixo: introdução da seção
 ├── radar/                # GERADO (projetos e ferramentas de outras pessoas)
 │   └── index.md          # fixo
-├── ferramentas/          # ESCRITO NO REPOSITÓRIO (ferramentas minhas, não vêm do vault)
-│   ├── index.md          # fixo: introdução da seção
-│   └── <ferramenta>.md   # página de apresentação; o HTML fica em quartz/static/ferramentas/<ferramenta>/index.html
+├── ferramentas/          # GERADO (ferramentas minhas, `tipo: projeto`); o HTML estático, quando há, fica no repositório
+│   └── index.md          # fixo: introdução da seção
+├── games/                # GERADO (games meus, `tipo: projeto`)
+│   └── index.md          # fixo: introdução da seção
 ├── leituras/             # GERADO (resenhas e encontros)
 │   └── index.md          # fixo + bloco "lendo agora" gerado (seção 6.8)
 └── assets/               # GERADO (imagens usadas)
 ```
 
-- `ferramentas/` não é gerada: o exportador não a toca. Cada ferramenta é um HTML único, sem backend e sem CDN (fontes de `quartz/static/fonts/`), servido em `/static/ferramentas/<ferramenta>/` com `noindex`; a página de apresentação em `content/ferramentas/` é a que fica indexada. As páginas de ferramentas entram na página Tags, no Arquivo (rótulo "Ferramenta") e nas vitrines da home por `publicada` em `ListaDeCards.tsx`; painéis e "Leia também" continuam só com notas exportadas.
-- O exportador **só escreve** em `posts/`, `radar/`, `leituras/` e `assets/`, e nunca apaga ou sobrescreve arquivos `index.md` dessas pastas.
+- `ferramentas/` e `games/` são geradas a partir de notas `tipo: projeto` do vault (seção 6.2): texto e imagens vivem no vault como markdown. O que é código **não** vai para o vault: a ferramenta que roda no navegador é um HTML único, sem backend e sem CDN (fontes de `quartz/static/fonts/`), versionado em `quartz/static/ferramentas/<ferramenta>/index.html`, servido em `/static/ferramentas/<ferramenta>/` com `noindex`. A nota do vault apresenta a ferramenta e leva para ela com um link HTML `<a data-router-ignore href="/static/ferramentas/<ferramenta>/">`. A página gerada em `content/ferramentas/` é a que fica indexada.
+- Páginas de ferramentas e games têm `gerado: true`, mas não são "notas de texto": `exportada` (`ListaDeCards.tsx`) as exclui, então painéis, "Leia também", anterior/próximo e os blocos de post do layout não aparecem nelas. Entram em Tags, no Arquivo (rótulos "Ferramenta" e "Game"), nas vitrines da home e no `llms.txt` por `publicada`. O menu lateral lista Games depois de Ferramentas.
+- Nas páginas de projeto, imagens em linhas seguidas viram uma galeria (`<div class="galeria">`, estilo em `custom.scss`).
+- O exportador **só escreve** em `posts/`, `radar/`, `leituras/`, `ferramentas/`, `games/` e `assets/`, e nunca apaga ou sobrescreve arquivos `index.md` dessas pastas.
 - Arquivos gerados levam no frontmatter `gerado: true`. O exportador só remove arquivos com essa marca.
 
 ## 6. Exportador (`tools/exportar.py`)
@@ -118,6 +121,7 @@ Nota elegível se **todas** forem verdadeiras:
 - `subtipo` não é `destaques`.
 - Tem `slug` (minúsculas, `a-z0-9-`, único entre as elegíveis) e `descricao` (até 160 caracteres).
 - Se `tipo: conteudo`: `canal: site` e `status` em `publicado` ou `agendado`; se `agendado`, `data_publicacao` ≤ hoje.
+- Se `tipo: projeto`: `subtipo` em `ferramenta` ou `game`, e a mesma regra de `status` e `data_publicacao` do conteúdo.
 
 Nota com `publicar: true` que falhe em qualquer regra: **erro** listado; com `--estrito` (padrão no comando `publicar`), aborta a exportação inteira.
 
@@ -128,6 +132,8 @@ Nota com `publicar: true` que falhe em qualquer regra: **erro** listado; com `--
 | `tipo: ferramenta` | `content/radar/<slug>.md` |
 | `tipo: fonte`, `subtipo: livro` | `content/leituras/<slug>.md` (resenha) |
 | `tipo: encontro` | `content/leituras/encontros/<slug>.md` |
+| `tipo: projeto`, `subtipo: ferramenta` | `content/ferramentas/<slug>.md` (saída `tipo: minha-ferramenta`) |
+| `tipo: projeto`, `subtipo: game` | `content/games/<slug>.md` (saída `tipo: game`) |
 | `tipo: ideia`, `tipo: mapa` | Ficam só no Obsidian: nunca exportados (erro se `publicar: true`) |
 | Outros tipos | Não exportados (erro se `publicar: true`) |
 
@@ -143,6 +149,7 @@ Somente estes campos saem; todo o resto é descartado.
 | `date` / `published` | `data_publicacao` (senão `criado`) |
 | `modified` | `atualizado` |
 | `tags` | `tags` |
+| `categoria`, `plataformas`, `genero` | só em `tipo: projeto` (`plataformas` aceita lista e sai como texto) |
 | `aliases` | slugs anteriores (manifesto, seção 6.7) |
 | `publish` | `true` (sempre) |
 | `gerado` | `true` (sempre) |
@@ -276,12 +283,12 @@ O Substack guarda a lista de assinantes e faz o envio. Não há integração aut
 - `<html lang="pt-BR">`, `description` em todas as páginas (do campo `descricao`).
 - Título (`<title>`, `og:title`, `twitter:title`): o do frontmatter mais o sufixo do site; o campo opcional `tituloSeo` substitui os dois. A home usa `tituloSeo` para carregar os temas do site em vez de "Início".
 - Open Graph e Twitter Card: título, descrição, URL canônica, imagem (capa da nota; sem capa, a imagem padrão `quartz/static/og-padrao.png`, 1200×630, em PNG; o `CustomOgImages` foi descartado porque gera WebP, que o LinkedIn não exibe).
-- `og:locale` `pt_BR` em todas as páginas. Posts, resenhas, encontros e ferramentas usam `og:type` `article`, com `article:published_time`, `article:modified_time`, `article:author` (página Sobre) e `article:tag`; as demais páginas são `website`. Sem `twitter:site` enquanto não houver perfil no X.
+- `og:locale` `pt_BR` em todas as páginas. Posts, resenhas, encontros, ferramentas e games usam `og:type` `article`, com `article:published_time`, `article:modified_time`, `article:author` (página Sobre) e `article:tag`; as demais páginas são `website`. Sem `twitter:site` enquanto não houver perfil no X.
 - `sitemap.xml` e `index.xml` (RSS) gerados pelo `ContentIndex`.
 - `robots.txt` permitindo tudo e apontando o sitemap.
-- `llms.txt` na raiz do site, gerado pelo exportador a cada `previa` e `publicar`: título e resumo do site, e links com descrição para posts, ferramentas, radar, leituras, Sobre e Newsletter (só páginas com `publish: true`, mais recentes primeiro). Vai para `content/llms.txt` e o Quartz o copia para a raiz.
+- `llms.txt` na raiz do site, gerado pelo exportador a cada `previa` e `publicar`: título e resumo do site, e links com descrição para posts, ferramentas, games, radar, leituras, Sobre e Newsletter (só páginas com `publish: true`, mais recentes primeiro). Vai para `content/llms.txt` e o Quartz o copia para a raiz.
 - `robots.txt` fica em `content/robots.txt` (o Quartz copia para a raiz) e libera também os robôs de buscadores com IA.
-- Dados estruturados em JSON-LD, gerados em `quartz/components/dadosEstruturados.ts` e inseridos pelo `Cabeca.tsx`: home com `WebSite` + `Person`; posts com `BlogPosting` (resenhas e encontros com `Article`); ferramentas com `SoftwareApplication`, usando os campos opcionais `categoria` (valor do schema.org) e `plataformas` do frontmatter. Autor e site vão embutidos em cada página.
+- Dados estruturados em JSON-LD, gerados em `quartz/components/dadosEstruturados.ts` e inseridos pelo `Cabeca.tsx`: home com `WebSite` + `Person`; posts com `BlogPosting` (resenhas e encontros com `Article`); games com `VideoGame` (`genero`, `plataformas`); ferramentas com `SoftwareApplication`, usando os campos opcionais `categoria` (valor do schema.org) e `plataformas` do frontmatter. Autor e site vão embutidos em cada página.
 - A home tem um `<h1>` só para leitores de tela e buscadores (`TituloDaHome.tsx`, texto do campo `h1` do frontmatter); as demais páginas usam o título do artigo.
 - Página 404 em português.
 
