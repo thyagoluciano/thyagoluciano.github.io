@@ -30,6 +30,12 @@
     "slug": "omnidesk",
     "slugs_anteriores": []
   },
+  "50-Conteudo/Site/Projeto - ZeroDay.md": {
+    "destino": "games/zeroday.md",
+    "sha256": "3d2c9237ee8fa0d0500b3d66913683602139aa1ba3dafcdec68b2551835544ab",
+    "slug": "zeroday",
+    "slugs_anteriores": []
+  },
   "50-Conteudo/Site/Site - Harness2.md": {
     "destino": "radar/harness2.md",
     "removida": "2026-11-04",

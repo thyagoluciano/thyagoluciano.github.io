@@ -15,6 +15,10 @@ Site pessoal com textos sobre inteligência artificial, engenharia de software e
 - [Estúdio de Retrato IA](https://thyagoluciano.com.br/ferramentas/estudio-de-retrato-ia): Monte prompts para gerar fotos de perfil com IA escolhendo rede, enquadramento, pose, luz, roupa e fundo.
 - [Course2Brain](https://thyagoluciano.com.br/ferramentas/course2brain): Extensão de Chrome e motor local que transformam aulas de cursos online em notas conectadas no Obsidian.
 
+## Games
+
+- [ZeroDay](https://thyagoluciano.com.br/games/zeroday): Jogo cooperativo no navegador em que o time de tecnologia defende a produção contra vulnerabilidades. Por que criei, a stack, as IAs e como criar sua head.
+
 ## Páginas
 
 - [Sobre](https://thyagoluciano.com.br/sobre): Quem é Thyago Luciano, os temas que estuda e como entrar em contato.
