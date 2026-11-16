@@ -1,5 +1,6 @@
 import { GlobalConfiguration } from "../cfg"
 import { QuartzPluginData } from "../plugins/vfile"
+import { FullSlug, simplifySlug } from "../util/path"
 import { getDate } from "./Date"
 import { dataDeAtualizacao, ferramentaPropria, gamePropria } from "./ListaDeCards"
 
@@ -10,6 +11,8 @@ interface Contexto {
   url: string
   imagem: string
   descricao: string
+  /** Só na home: os itens do feed de publicações recentes, na ordem em que aparecem. */
+  recentes?: { slug: string; titulo: string }[]
 }
 
 const AUTOR = {
@@ -35,10 +38,10 @@ const limpar = <T extends Record<string, unknown>>(objeto: T): T =>
 
 /**
  * Dados estruturados (schema.org) da página, como JSON-LD:
- * home → WebSite + Person; posts → BlogPosting; resenhas e encontros → Article;
+ * home → WebSite + Person + ItemList das publicações recentes; posts → BlogPosting; resenhas e encontros → Article;
  * ferramentas escritas no repositório → SoftwareApplication; games → VideoGame. Demais páginas: nenhum.
  */
-export function dadosEstruturados({ cfg, fileData, url, imagem, descricao }: Contexto) {
+export function dadosEstruturados({ cfg, fileData, url, imagem, descricao, recentes }: Contexto) {
   const origem = `https://${cfg.baseUrl}`
   const idPessoa = `${origem}/#pessoa`
   const idSite = `${origem}/#site`
@@ -72,6 +75,23 @@ export function dadosEstruturados({ cfg, fileData, url, imagem, descricao }: Con
           publisher: { "@id": idPessoa },
         }),
         pessoa,
+        ...(recentes && recentes.length > 0
+          ? [
+              {
+                "@type": "ItemList",
+                "@id": `${origem}/#recentes`,
+                name: "Publicações recentes",
+                itemListOrder: "https://schema.org/ItemListOrderDescending",
+                numberOfItems: recentes.length,
+                itemListElement: recentes.map((item, i) => ({
+                  "@type": "ListItem",
+                  position: i + 1,
+                  name: item.titulo,
+                  url: `${origem}/${simplifySlug(item.slug as FullSlug)}`,
+                })),
+              },
+            ]
+          : []),
       ],
     }
   }

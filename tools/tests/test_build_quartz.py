@@ -166,6 +166,16 @@ def test_cards_listas_tags_e_arquivo(amb, tmp_path):
     assert 'class="card-capa"' in home  # o artigo com capa mostra imagem
     assert 'class="card-tipo">Post</span>' in home and 'class="card-tipo">Game</span>' in home and "1 min" in home
     assert home.count("Ver arquivo") == 1 and "Ver todos" not in home
+    # dados estruturados da home: ItemList com os mesmos itens e a mesma ordem dos cards
+    import json
+
+    ld = json.loads(re.search(r'<script type="application/ld\+json">(.*?)</script>', home, re.S).group(1))
+    lista = next(n for n in ld["@graph"] if n["@type"] == "ItemList")
+    assert [i["name"] for i in lista["itemListElement"]] == feed
+    assert [i["position"] for i in lista["itemListElement"]] == list(range(1, len(feed) + 1))
+    assert lista["numberOfItems"] == len(feed) and lista["itemListOrder"].endswith("ItemListOrderDescending")
+    assert all(i["url"].startswith("https://thyagoluciano.com.br/") for i in lista["itemListElement"])
+    assert {n["@type"] for n in ld["@graph"]} == {"WebSite", "Person", "ItemList"}
 
     assert cards(ler("posts/index.html")) == ["Como uso IA no dia a dia", "Contexto importa", "Agendado passado"]
     assert sorted(cards(ler("leituras/index.html"))) == ["A Arte da Guerra", "Setembro 2026"]  # resenha e encontro

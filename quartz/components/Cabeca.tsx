@@ -5,6 +5,7 @@ import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } fro
 import { unescapeHTML } from "../util/escape"
 import { dadosEstruturados, serializar } from "./dadosEstruturados"
 import { getDate } from "./Date"
+import { LIMITE_FEED, paginasDoFeed } from "./FeedRecente"
 import { dataDeAtualizacao, ferramentaPropria, gamePropria } from "./ListaDeCards"
 const LATIN =
   "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD"
@@ -25,7 +26,12 @@ const fontFaces = (baseDir: string) =>
   ).join("")
 
 export default (() => {
-  const Cabeca: QuartzComponent = ({ cfg, fileData, externalResources }: QuartzComponentProps) => {
+  const Cabeca: QuartzComponent = ({
+    cfg,
+    fileData,
+    allFiles,
+    externalResources,
+  }: QuartzComponentProps) => {
     const titleSuffix = cfg.pageTitleSuffix ?? ""
     // `tituloSeo` (frontmatter) substitui o título e o sufixo no <title> e nos cartões sociais
     const title =
@@ -65,7 +71,22 @@ export default (() => {
     const atualizada = ehArtigo ? dataDeAtualizacao(cfg, fileData) : undefined
     const tags = ehArtigo && Array.isArray(fileData.frontmatter?.tags) ? fileData.frontmatter.tags : []
 
-    const dados = dadosEstruturados({ cfg, fileData, url: socialUrl, imagem, descricao: description })
+    // Home: o ItemList reflete exatamente os cards do feed (mesma ordem e mesmo limite)
+    const recentes =
+      fileData.slug === "index"
+        ? paginasDoFeed(allFiles, cfg)
+            .slice(0, LIMITE_FEED)
+            .map((p) => ({ slug: p.slug!, titulo: String(p.frontmatter?.title ?? "") }))
+        : undefined
+
+    const dados = dadosEstruturados({
+      cfg,
+      fileData,
+      url: socialUrl,
+      imagem,
+      descricao: description,
+      recentes,
+    })
 
     return (
       <head>

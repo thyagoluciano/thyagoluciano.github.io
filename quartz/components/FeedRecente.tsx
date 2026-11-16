@@ -1,4 +1,6 @@
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
+import { GlobalConfiguration } from "../cfg"
+import { QuartzPluginData } from "../plugins/vfile"
 import { FullSlug, resolveRelative } from "../util/path"
 import { classNames } from "../util/lang"
 import { Cartoes, CSS_CARDS, maisRecentesPrimeiro, publicada } from "./ListaDeCards"
@@ -7,13 +9,20 @@ interface Options {
   limite: number
 }
 
+/** Quantidade de cards do feed da home; o ItemList dos dados estruturados usa o mesmo número. */
+export const LIMITE_FEED = 12
+
+/** Páginas do feed: tudo que é publicado, da mais recente para a mais antiga. */
+export const paginasDoFeed = (allFiles: QuartzPluginData[], cfg: GlobalConfiguration) =>
+  allFiles.filter(publicada).sort(maisRecentesPrimeiro(cfg))
+
 /**
  * Página inicial: um único feed de cards (posts, ferramentas, games, radar e leituras),
  * sem separar por seção, com a publicação mais recente primeiro. O tipo de cada item
  * aparece no próprio card (Post, Ferramenta, Game...).
  */
 export default ((opts?: Partial<Options>) => {
-  const limite = opts?.limite ?? 12
+  const limite = opts?.limite ?? LIMITE_FEED
 
   const FeedRecente: QuartzComponent = ({
     allFiles,
@@ -21,7 +30,7 @@ export default ((opts?: Partial<Options>) => {
     cfg,
     displayClass,
   }: QuartzComponentProps) => {
-    const paginas = allFiles.filter(publicada).sort(maisRecentesPrimeiro(cfg))
+    const paginas = paginasDoFeed(allFiles, cfg)
     return (
       <section class={classNames(displayClass, "feed-recente")}>
         <header class="feed-cabeca">
